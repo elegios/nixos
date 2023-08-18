@@ -1,0 +1,16 @@
+Takes a JSON-encoded graph on stdin, then visualize in a webpage.
+
+The format is fairly flexible and can take any of the following
+shapes:
+- Object, in which case the following fields are possible:
+  - `source`, `from`, `id`, containing a number, string, or
+    boolean. Adds that node to the graph.
+  - `target` or `to`, containing a number, string, or boolean, or a
+    list of such things. Adds edges to the graph.
+  - `label`, containing anything that can be coerced into a
+    string. Give the originating node this label, instead of
+    defaulting to the `id`.
+  - `kind` or `type`, containing a number, string, or boolean. Nodes
+    with the same `kind` are drawn with the same color.
+- Array, in which case we recursively examine each element.
+- String, number, or boolean, behaving the same as `{id: <value>}`.

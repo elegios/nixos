@@ -1,0 +1,22 @@
+#!/usr/bin/env fish
+
+# Prints all files in the current repository, if there is one
+
+if test (count $argv) -gt 0
+  cd $argv[1]
+end
+
+if which git >/dev/null 2>&1 && git ls-files --exclude-standard --other --cached 2>/dev/null
+  exit 0
+end
+
+if which jj >/dev/null 2>&1 && jj files --no-pager 2>/dev/null
+  exit 0
+end
+
+if which sl >/dev/null 2>&1 && sl files 2>/dev/null
+  exit 0
+end
+
+echo "Not in a known kind of repository" >&2
+exit 1

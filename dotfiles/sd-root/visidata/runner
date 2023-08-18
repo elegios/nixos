@@ -1,0 +1,15 @@
+#!/usr/bin/env fish
+
+# <.vd> sheet...
+
+set -l cmdlog $argv[1]
+set -l argv $argv[2..]
+
+set -l vars
+
+for i in (seq (count $argv))
+    set vars $vars "arg"$i"base="(path change-extension '' $argv[$i])
+    set vars $vars "arg"$i"="$argv[$i]
+end
+
+command vd --play (sed '/^#[ !]/d' < $cmdlog | psub) $vars

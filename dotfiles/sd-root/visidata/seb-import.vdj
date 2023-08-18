@@ -1,0 +1,25 @@
+#!/usr/bin/env -S vd -p
+{"sheet": "", "col": "", "row": "", "longname": "sheets-stack", "input": "", "keystrokes": "Shift+S", "comment": "open SheetsStack"}
+{"sheet": "sheets", "col": "", "row": 1, "longname": "open-row", "input": "", "keystrokes": "Enter", "comment": "open current row with sheet-specific dive"}
+{"sheet": "", "col": "", "row": "", "longname": "open-row", "input": "", "keystrokes": "Enter", "comment": "open current row with sheet-specific dive"}
+{"sheet": "", "col": "", "row": "7", "longname": "select-before", "input": "", "keystrokes": "zs", "comment": "select all rows from top to cursor"}
+{"sheet": "", "col": "", "row": "", "longname": "delete-selected", "input": "", "keystrokes": "gd", "comment": "delete selected rows"}
+{"sheet": "", "col": "Export fr\u00e5n internetbanken f\u00f6r privatpersoner", "row": "", "longname": "rename-col", "input": "Date1", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "", "col": "Date1", "row": "", "longname": "type-date", "input": "", "keystrokes": "@", "comment": "set type of current column to date"}
+{"sheet": "", "col": 1, "row": "", "longname": "rename-col", "input": "Date2", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "", "col": "Date2", "row": "", "longname": "type-date", "input": "", "keystrokes": "@", "comment": "set type of current column to date"}
+{"sheet": "", "col": 2, "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "Hide current column"}
+{"sheet": "", "col": 2, "row": "", "longname": "rename-col", "input": "Name", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "", "col": 3, "row": "", "longname": "rename-col", "input": "Amount", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "", "col": 4, "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "Hide current column"}
+{"sheet": "", "col": "Name", "row": "", "longname": "capture-col", "input": "(?:/(\\d\\d-\\d\\d-\\d\\d)$)?", "keystrokes": ";", "comment": "add new column from capture groups of regex; requires example row"}
+{"sheet": "", "col": "Name_re0", "row": "", "longname": "type-customdate", "input": "%y-%m-%d", "keystrokes": "z@", "comment": "set type of current column to custom date format"}
+{"sheet": "", "col": "Name_re0", "row": "", "longname": "rename-col", "input": "Date3", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "", "col": "Name", "row": "", "longname": "capture-col", "input": "(.*?)(?:\\s*/\\d\\d-\\d\\d-\\d\\d)?$", "keystrokes": ";", "comment": "add new column from capture groups of regex; requires example row"}
+{"sheet": "", "col": "Name", "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "Hide current column"}
+{"sheet": "", "col": "Name_re0", "row": "", "longname": "rename-col", "input": "Name", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "", "col": "Date3", "row": "", "longname": "addcol-expr", "input": "min(Date1, Date3 or Date2)", "comment": "create new column from Python expression, with column names as variables"}
+{"sheet": "", "col": "min(Date1, Date3 or Date2)", "row": "", "longname": "rename-col", "input": "Real Date", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "", "col": "Date3", "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "Hide current column"}
+{"sheet": "", "col": "Date2", "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "Hide current column"}
+{"sheet": "", "col": "Date1", "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "Hide current column"}

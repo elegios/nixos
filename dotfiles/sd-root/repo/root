@@ -1,0 +1,16 @@
+#!/usr/bin/env fish
+
+set -l repo_dirs .git .jj .sl
+
+while true
+  for d in $repo_dirs
+    if test -d $d
+      pwd
+      exit 0
+    end
+  end
+  cd ..
+  if test (pwd) = "/"
+    exit 1
+  end
+end

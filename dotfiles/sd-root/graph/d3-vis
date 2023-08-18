@@ -1,0 +1,351 @@
+#!/usr/bin/env -S node --input-type=module
+
+let http = require('http');
+let url = require('url');
+
+async function read(stream) {
+    const chunks = [];
+    for await (const chunk of stream) chunks.push(chunk);
+    return Buffer.concat(chunks).toString('utf8');
+}
+
+let graph = {nodes: [], links: []};
+let nodes = {};
+
+function registerNode(id, label, kind) {
+    let node = nodes[id];
+    if (!node) {
+        node = {id: id};
+        nodes[id] = node;
+        graph.nodes.push(node);
+    }
+    if (label)
+        node.label = id;
+    if (kind)
+        node.kind = kind;
+}
+
+function registerLink(source, target) {
+    registerNode(target);
+    graph.links.push({source, target});
+}
+
+function processInput(input) {
+    if (input === null || input === undefined)
+        return;
+
+    if (Array.isArray(input)) {
+        input.forEach(processInput);
+    } else if (typeof input !== 'object') {
+        registerNode(input);
+    } else {
+        let id = input.id || input.source || input.from;
+        let label = input.label;
+        let kind = input.kind || input.type;
+        registerNode(id, label, kind);
+        let target = input.target || input.to;
+        if (Array.isArray(target)) {
+            target.forEach(t => registerLink(id, t));
+        } else {
+            registerLink(id, target);
+        }
+    }
+}
+
+let html = `
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Simple D3 Graph Visualization</title>
+    <style>
+    * { margin: 0; padding: 0; }
+    body, html { height: 100%; }
+    #canvas {
+      position: absolute;
+      width: 100%;
+      weight: 100%;
+    }
+    </style>
+  </head>
+  <body onresize="resizeCanvas()" onload="resizeCanvas()">
+  <canvas id="canvas"></canvas>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="//unpkg.com/d3-force-magnetic"></script>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    // Copyright 2021 Observable, Inc.
+    // Released under the ISC license.
+    // https://observablehq.com/@d3/force-directed-graph-canvas
+    function ForceGraph({
+      nodes, // an iterable of node objects (typically [{id}, …])
+      links // an iterable of link objects (typically [{source, target}, …])
+    }, {
+      nodeId = d => d.id, // given d in nodes, returns a unique identifier (string)
+      label = d => d.label || d.id,
+      initialX = d => d.initialX,
+      initialY = d => d.initialY,
+      nodeGroup, // given d in nodes, returns an (ordinal) value for color
+      nodeGroups, // an array of ordinal values representing the node groups
+      nodeFill = "currentColor", // node stroke fill (if not using a group color encoding)
+      nodeStroke = "#fff", // node stroke color
+      nodeStrokeWidth = 1.5, // node stroke width, in pixels
+      nodeStrokeOpacity = 1, // node stroke opacity
+      nodeRadius = 5, // node radius, in pixels
+      nodeStrength,
+      linkSource = ({source}) => source, // given d in links, returns a node identifier string
+      linkTarget = ({target}) => target, // given d in links, returns a node identifier string
+      linkStroke = "#999", // link stroke color
+      linkStrokeOpacity = 0.6, // link stroke opacity
+      linkStrokeWidth = 1.5, // given d in links, returns a stroke width in pixels
+      linkStrokeLinecap = "round", // link stroke linecap
+      linkStrength,
+      colors = d3.schemeTableau10, // an array of color strings, for the node groups
+      width = 640, // outer width, in pixels
+      height = 400, // outer height, in pixels
+      invalidation // when this promise resolves, stop the simulation,
+    } = {}) {
+      debugger;
+      // Compute values.
+      const N = d3.map(nodes, nodeId).map(intern);
+      const X = d3.map(nodes, initialX).map(intern);
+      const Y = d3.map(nodes, initialY).map(intern);
+      const Labels = d3.map(nodes, label).map(intern);
+      const LS = d3.map(links, linkSource).map(intern);
+      const LT = d3.map(links, linkTarget).map(intern);
+      const G = nodeGroup == null ? null : d3.map(nodes, nodeGroup).map(intern);
+      const W = typeof linkStrokeWidth !== "function" ? null : d3.map(links, linkStrokeWidth);
+      const L = typeof linkStroke !== "function" ? null : d3.map(links, linkStroke);
+
+      // Replace the input nodes and links with mutable objects for the simulation.
+      nodes = d3.map(nodes, (_, i) => ({id: N[i], label: Labels[i], x: X[i], y: Y[i]}));
+      links = d3.map(links, (_, i) => ({source: LS[i], target: LT[i]}));
+
+      // Compute default domains.
+      if (G && nodeGroups === undefined) nodeGroups = d3.sort(G);
+
+      // Construct the scales.
+      const color = nodeGroup == null ? null : d3.scaleOrdinal(nodeGroups, colors);
+
+      // Construct the forces.
+      const forceEndDist = Math.max(canvas.width, canvas.height);
+      const distWeight = d => Math.min(1/d, d <= forceEndDist ? 1 - d/forceEndDist : 0);
+      const forceNode = d3.forceMagnetic().theta(0.9).charge(-30).distanceWeight(distWeight);
+      // const forceNode = d3.forceManyBody().distanceMax(Math.max(canvas.width, canvas.height));
+      const forceLink = d3.forceLink(links).id(({index: i}) => N[i]);
+      if (nodeStrength !== undefined) forceNode.strength(nodeStrength);
+      if (linkStrength !== undefined) forceLink.strength(linkStrength);
+
+      const simulation = d3.forceSimulation(nodes)
+        .force("link", forceLink)
+        .force("charge", forceNode)
+        .force("center",  d3.forceCenter(canvas.width/2, canvas.height/2))
+        .velocityDecay(0.5)
+        .alphaTarget(1)
+        .alphaDecay(1 - Math.pow(0.001, 1 / 15));
+
+      let isPlaying = true;
+
+      let isPanning = false;
+      let panStart = {x: 0, y: 0};
+      let cameraZoom = 1;
+      let cameraOffset = {x: 0, y: 0};
+      function panMouseDown(event) {
+        if (event.button !== 1)
+          return;
+        isPanning = true;
+        panStart.x = event.clientX/cameraZoom - cameraOffset.x;;
+        panStart.y = event.clientY/cameraZoom - cameraOffset.y;;
+      }
+      function panMouseMove(event) {
+        if (!isPanning)
+          return;
+        cameraOffset.x = event.clientX/cameraZoom - panStart.x;
+        cameraOffset.y = event.clientY/cameraZoom - panStart.y;
+      }
+      function panMouseUp(event) {
+        isPanning = false;
+      }
+      function panZoom(event) {
+        cameraZoom -= event.deltaY*0.0005;
+      }
+      function togglePlaying(event) {
+        if (event.code == "Space") {
+          isPlaying = !isPlaying;
+          simulation.alphaTarget(isPlaying ? 1 : 0).restart();
+        }
+      }
+      canvas.addEventListener("mousedown", panMouseDown);
+      canvas.addEventListener("mousemove", panMouseMove);
+      canvas.addEventListener("mouseup", panMouseUp);
+      canvas.addEventListener("wheel", panZoom);
+      document.addEventListener("keyup", togglePlaying);
+      const transformedX = x => (x - canvas.width/2)/cameraZoom + canvas.width/2 - cameraOffset.x;
+      const transformedY = y => (y - canvas.height/2)/cameraZoom + canvas.height/2 - cameraOffset.y;
+
+      let draggedThing = null;
+      function draw() {
+        context.save();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.translate(canvas.width / 2, canvas.height / 2 )
+        context.scale(cameraZoom, cameraZoom)
+        context.translate(-canvas.width / 2 + cameraOffset.x, -canvas.height / 2 + cameraOffset.y )
+
+        context.save();
+        context.globalAlpha = linkStrokeOpacity;
+        for (const [i, link] of links.entries()) {
+          context.beginPath();
+          drawLink(link);
+          context.strokeStyle = L ? L[i]: linkStroke;
+          context.lineWidth = W ? W[i]: linkStrokeWidth;
+          context.stroke();
+        }
+        context.restore();
+
+        context.save();
+        context.strokeStyle = nodeStroke;
+        context.globalAlpha = nodeStrokeOpacity;
+        for (const [i, node] of nodes.entries()) {
+          context.beginPath();
+          drawNode(node)
+          context.fillStyle = G ? color(G[i]): nodeFill;
+          context.strokeStyle = nodeStroke;
+          context.fill();
+          context.stroke();
+        }
+        context.restore();
+        if (draggedThing && draggedThing.label) {
+          context.save();
+          context.textAlign = "center";
+          context.font = "12pt Arial";
+          context.fillText(draggedThing.label, draggedThing.x, draggedThing.y);
+          context.restore();
+        }
+        context.restore();
+        requestAnimationFrame(draw);
+      }
+
+      function drawLink(d) {
+        context.moveTo(d.source.x, d.source.y);
+        context.lineTo(d.target.x, d.target.y);
+      }
+
+      function drawNode(d) {
+        context.moveTo(d.x + nodeRadius, d.y);
+        context.arc(d.x, d.y, nodeRadius, 0, 2 * Math.PI);
+      }
+
+      if (invalidation != null) invalidation.then(() => simulation.stop());
+
+      function intern(value) {
+        return value !== null && typeof value === "object" ? value.valueOf() : value;
+      }
+
+      function drag(simulation) {
+        function dragstarted(event) {
+          if (!event.active) simulation.alphaTarget(1).restart();
+          event.subject.fx = event.subject.x;
+          event.subject.fy = event.subject.y;
+        }
+
+        function dragged(event) {
+          event.subject.fx += event.dx / cameraZoom;
+          event.subject.fy += event.dy / cameraZoom;
+        }
+
+        function dragended(event) {
+          if (!event.active && !isPlaying) simulation.alphaTarget(0);
+          event.subject.fx = null;
+          event.subject.fy = null;
+        }
+
+        function dragsubject(event) {
+          draggedThing = simulation.find(transformedX(event.sourceEvent.offsetX), transformedY(event.sourceEvent.offsetY));
+          return draggedThing;
+        }
+
+        return d3.drag()
+          .subject(dragsubject)
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended);
+      }
+
+      draw();
+      return Object.assign(d3.select(context.canvas).call(drag(simulation)).node(), {scales: {color}});
+    }
+
+    fetch('/graph.json').then(res => res.json()).then(graph => {
+      let nextColorId = 1;
+      let colorIds = {};
+      ForceGraph(graph, {
+        nodeGroup: n => {
+          if (n.kind) {
+            if (!colorIds[n.kind]) {
+              colorIds[n.kind] = nextColorId;
+              nextColorId++;
+            }
+            return colorIds[n.kind];
+          } else {
+            return 0;
+          }
+        },
+      });
+    });
+  </script>
+  </body>
+</html>
+`;
+
+(async function() {
+
+processInput(JSON.parse(await read(process.stdin)));
+
+console.log("#Nodes: " + graph.nodes.length);
+console.log("#Edges: " + graph.links.length);
+
+let server = http.createServer(function(request, response) {
+    let uri = url.parse(request.url).pathname;
+    switch (uri) {
+    case "/":
+        response.writeHead(200);
+        response.write(html);
+        response.end();
+        console.log("Served webpage, waiting for graph request...")
+        break;
+
+    case "/graph.json":
+        response.setHeader("Content-Type", "application/json");
+        response.writeHead(200);
+        response.write(JSON.stringify(graph));
+        response.end();
+        console.log("Served graph, exiting server shortly.")
+        server.close()
+        break;
+
+    default:
+        console.log("Request for " + uri + " rejected with 404");
+        response.writeHead(404);
+        response.end();
+    }
+    console.log(uri);
+});
+
+server.listen(0, () => {
+    const port = server.address().port;
+    var url = 'http://localhost:' + port;
+    var start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
+    console.log("Opening " + url);
+    require('child_process').exec(start + ' ' + url);
+})
+
+})();

@@ -1,0 +1,3 @@
+#!/usr/bin/env fish
+
+xdotool key --clearmodifiers Shift+F10 r $argv[1]

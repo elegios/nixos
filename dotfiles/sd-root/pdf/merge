@@ -1,0 +1,5 @@
+#!/usr/bin/env fish
+
+# Merges the pdfs given as arguments, creating a new file (the first argument)
+
+gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress -sOutputFile=$argv[1] $argv[2..]

@@ -1,0 +1,28 @@
+#!/usr/bin/env fish
+
+if not set -q XDG_CONFIG_HOME
+    set XDG_CONFIG_HOME ~/.config
+end
+set FISH_DIR $XDG_CONFIG_HOME/fish
+
+if not test -f $FISH_DIR/fish_variables
+    echo "Could not find a 'fish_variables' file in" $FISH_DIR
+    exit 1
+end
+
+echo '{{- /* chezmoi:modify-template */ -}}'
+
+# NOTE(vipa, 2023-07-04): Insert the parts of the file that are
+# *before* "local" variables (those starting with '_')
+sed -n '/^SETUVAR \(-[^ ]+ \)*_/q;p' < $FISH_DIR/fish_variables
+
+# NOTE(vipa, 2023-07-04): Insert a template that pulls "local"
+# variables (those starting with '_') from the current fish_variables
+# file. We insert these before non-local variables because
+echo '{{ range .chezmoi.stdin | splitList "\n" -}}'
+echo '{{- if regexMatch "^SETUVAR (-[^ ]+ )*_" . -}} {{ print . "\n" }} {{- end -}}'
+echo '{{- end -}}'
+
+# NOTE(vipa, 2023-07-04): Insert the parts of the file that are
+# *after* "local" variables (those starting with '_')
+sed -n '/^SETUVAR \(-[^ ]+ \)*[a-z]/,$p' < $FISH_DIR/fish_variables

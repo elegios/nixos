@@ -1,0 +1,6 @@
+#!/usr/bin/env -S jq -Msrf
+
+# Read a stream of edges of the form {from : any, to : any}, generate
+# a simple directional dot graph.
+
+[.[] | "\(.from) -> \(.to);"] | add | "digraph { \(.) }"
