@@ -78,7 +78,6 @@ in
     wget
     curl
     ulauncher
-    chezmoi
     fish
     firefox
     spotify

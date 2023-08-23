@@ -596,6 +596,8 @@ rec {
     enable = true;
     package = pkgs.emacs29-pgtk;
   };
+  xdg.configFile."emacs/init.el".source = ./dotfiles/emacs/init.el;
+  xdg.configFile."emacs/lisp".source = ./dotfiles/emacs/lisp;
 
   programs.direnv = {
     enable = true;
