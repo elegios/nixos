@@ -542,23 +542,30 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
 (defvar ele/grid-column-keys '(?a ?o ?e ?u))
 (defvar ele/grid-row-keys '(?h ?t ?n ?s))
 
-(defun ele/candidates-in-rect (re lstart lend cstart cend)
-  "Produces a list of candidates as expected by avy.  The candidates
-are only those fully contained within the given rectangle."
+(defun ele/for-lines-in-rect (lstart lend cstart cend f)
+  ""
   (save-excursion
     (let* ((startpoint (progn (move-to-window-line lstart) (point)))
-           (endpoint (progn (move-to-window-line lend) (point)))
-           (wnd (selected-window))
-           (candidates nil))
+           (endpoint (progn (move-to-window-line lend) (point))))
       (goto-char startpoint)
       (while (< (point) endpoint)
         (let ((start (progn (move-to-column cstart) (point)))
               (end (progn (move-to-column cend) (point))))
           (goto-char start)
-          (while (re-search-forward re end t)
-            (push (cons (cons (match-beginning 0) (match-end 0)) wnd) candidates))
-          (vertical-motion 1)))
-      (nreverse candidates))))
+          (funcall f start end)
+          (vertical-motion 1))))))
+
+(defun ele/candidates-in-rect (re lstart lend cstart cend)
+  "Produces a list of candidates as expected by avy.  The candidates
+are only those fully contained within the given rectangle."
+  (let ((wnd (selected-window))
+        (candidates nil))
+    (ele/for-lines-in-rect
+     lstart lend cstart cend
+     (lambda (_ end)
+       (while (re-search-forward re end t)
+         (push (cons (cons (match-beginning 0) (match-end 0)) wnd) candidates))))
+    (nreverse candidates)))
 
 (defvar ele/grid-face 'highlight)
 
@@ -572,17 +579,28 @@ are only those fully contained within the given rectangle."
         (key-chord-define
          ryo-modal-mode-map
          (vector rkey ckey)
-         (lambda (key)
-           (interactive (list (read-char "char: " t)))
+         (lambda ()
+           (interactive)
            (let* ((lines (window-body-height))
-                  (chunk-height (/ lines (length ele/grid-row-keys))))
-             (avy-process
-              (ele/candidates-in-rect
-               (regexp-quote (string key))
-               (* row chunk-height)
-               (* (1+ row) chunk-height)
-               col
-               next-col))))))
+                  (chunk-height (/ lines (length ele/grid-row-keys)))
+                  (lstart (* row chunk-height))
+                  (lend (* (1+ row) chunk-height))
+                  (cstart col)
+                  (cend next-col)
+                  (overlays nil))
+             (ele/for-lines-in-rect
+              lstart lend cstart cend
+              (lambda (start end)
+                (when (/= start end)
+                  (let ((ov (make-overlay start end)))
+                    (overlay-put ov 'face ele/grid-face)
+                    (push ov overlays)))))
+             (unwind-protect
+                 (avy-process
+                  (ele/candidates-in-rect
+                   (regexp-quote (string (read-char "char: " t)))
+                   lstart lend cstart cend))
+               (seq-do (symbol-function 'delete-overlay) overlays))))))
       ele/grid-column-keys
       ele/grid-columns
       (cdr ele/grid-columns)))
