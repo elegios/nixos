@@ -30,17 +30,19 @@
 (setq show-paren-delay 0)
 (show-paren-mode 1)
 (global-unset-key (kbd "C-z"))
+(pixel-scroll-precision-mode)
 
 
 ; ==== Setup package management ====
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-;; (setq package-archives '(("melpa" . "http://melpa.org/packages/")))
-(package-initialize)
-(if package-archive-contents
-  (package-refresh-contents t)
-  (package-refresh-contents nil))
+;; TODO(vipa, 2023-09-08): This is probably needed for the first run
+;; of emacs, to ensure we can install packages
+;; (package-initialize t)
+;; (if package-archive-contents
+;;   (package-refresh-contents t)
+;;   (package-refresh-contents nil))
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
@@ -62,10 +64,10 @@
 
 ; ==== Get exec-path and stuff from shell, then switch to bash to be posix-compliant ====
 
-(when (memq system-type '(darwin gnu/linux))
-  (use-package exec-path-from-shell
-    :config
-    (exec-path-from-shell-initialize)))
+;; (when (memq system-type '(darwin gnu/linux))
+;;   (use-package exec-path-from-shell
+;;     :config
+;;     (exec-path-from-shell-initialize)))
 
 (if (executable-find "bash")
     (setq shell-file-name (executable-find "bash"))
@@ -146,7 +148,9 @@
   (setq eldoc-echo-area-prefer-doc-buffer t))
 
 (use-package eglot
-  :hook (latex-mode . eglot-ensure))
+  :hook (latex-mode . eglot-ensure)
+  :config
+  (fset #'jsonrpc--log-event #'ignore))
 
 (use-package dtrt-indent
   :diminish dtrt-indent-mode
@@ -478,71 +482,64 @@
   (setq whitespace-space-regexp "\\(^ +\\)")
   (setq whitespace-tab-regexp "\\(^\t+\\)"))
 
-(when (executable-find "coqc")
-  (use-package proof-general
-    :config
-    (setq proof-splash-enable nil)
-    (setq coq-compile-before-require t)))
+(use-package proof-general
+  :config
+  (setq proof-splash-enable nil)
+  (setq coq-compile-before-require t))
 
-(when (executable-find "ocaml")
-  (use-package tuareg
+(use-package tuareg
     :mode ("\\.ml(|i|y|l|p)\\'" . tuareg-mode))
-  (if (executable-find "ocamlmerlin")
-      (use-package merlin
+
+(use-package merlin
         :after (company tuareg)
         :hook (tuareg-mode . merlin-mode))
-    (message "Warning: no ocamlmerlin executable, won't load that package")))
 
-(when (executable-find "npm")
-  ; TODO: this doesn't actually start tsserver (tide-restart[..]) or turn on flycheck (flycheck-mode)
-  (use-package typescript-mode
-    :mode ("\\.ts\\'" . typescript-mode))
-
-  (use-package tide
+; TODO: this doesn't actually start tsserver (tide-restart[..]) or turn on flycheck (flycheck-mode)
+(use-package tide
     :after (typescript-mode company flycheck)
     :hook
     ((typescript-mode . tide-setup)
      (typescript-mode . tide-hl-identifier-mode)))
 
-  (use-package purescript-mode
-    :hook (purescript-mode . turn-on-purescript-indentation)))
+(use-package typescript-mode
+    :mode ("\\.ts\\'" . typescript-mode))
 
-(when (executable-find "elm")
-  (use-package elm-mode
-    :mode ("\\.elm\\'" . elm-mode)
-    :config
-    (when (executable-find "elm-format")
-      (add-hook 'elm-mode-hook 'elm-format-on-save-mode))))
+(use-package purescript-mode
+  :hook (purescript-mode . turn-on-purescript-indentation))
 
-(when (executable-find "cargo")
-  (use-package rust-mode))
-;;   (use-package rustic
-;;     :mode ("\\.rs\\'" . rustic-mode)
-;;     :hook (rust-mode . lsp)
-;;     :config
-;;     (setq rustic-format-trigger 'on-save)
-;;     (setq rustic-format-on-save t))
-;;   (use-package flycheck-rust
-;;     :after rust-mode
-;;     :hook (flycheck-mode . flycheck-rust-setup)))
+(use-package elm-mode
+  :mode ("\\.elm\\'" . elm-mode)
+  :config
+  (when (executable-find "elm-format")
+    (add-hook 'elm-mode-hook 'elm-format-on-save-mode)))
 
-(when (executable-find "stack")
-  (use-package haskell-mode
-    :ryo
-    (:mode 'haskell-mode)))
+(use-package rust-mode
+  :mode ("\\.rs\\'" . rust-mode))
+;; (use-package rustic
+;;   :mode ("\\.rs\\'" . rustic-mode)
+;;   :hook (rust-mode . lsp)
+;;   :config
+;;   (setq rustic-format-trigger 'on-save)
+;;   (setq rustic-format-on-save t))
+;; (use-package flycheck-rust
+;;   :after rust-mode
+;;   :hook (flycheck-mode . flycheck-rust-setup)))
 
-(when (executable-find "octave")
-  (use-package matlab
-    :ensure matlab-mode))
+(use-package haskell-mode
+  :ryo
+  (:mode 'haskell-mode))
 
-(when (executable-find "z3")
-  (use-package z3-mode))
+(use-package matlab
+  :ensure matlab-mode
+  :mode ("\\.m\\'" . matlab-mode))
 
-(when (executable-find "go")
-  (use-package go-mode));; TODO(vipa, 2021-01-31): Should setup gofmt-before-save, but it should only be run when in go-mode, which the mode itself doesn't solve for me...
+(use-package z3-mode
+  :mode ("\\.smt[2]?$" . z3-mode))
 
-(when (executable-find "R")
-  (use-package stan-mode
+(use-package go-mode
+  :mode ("\\.go\\'" . go-mode));; TODO(vipa, 2021-01-31): Should setup gofmt-before-save, but it should only be run when in go-mode, which the mode itself doesn't solve for me...
+
+(use-package stan-mode
     :mode ("\\.stan\\'" . stan-mode)
     :hook (stan-mode . stan-mode-setup)
     ;;
@@ -550,20 +547,17 @@
     ;; The officially recommended offset is 2.
     (setq stan-indentation-offset 2))
 
-  (use-package company-stan
-    :hook (stan-mode . company-stan-setup)
-    ;;
-    :config
-    ;; Whether to use fuzzy matching in `company-stan'
-    (setq company-stan-fuzzy nil)))
+(use-package company-stan
+  :hook (stan-mode . company-stan-setup)
+  :config
+  ;; Whether to use fuzzy matching in `company-stan'
+  (setq company-stan-fuzzy nil))
 
-(when (executable-find "minizinc")
-  (use-package minizinc-mode
-    :mode ("\\.mzn\\'" . minizinc-mode)))
+(use-package minizinc-mode
+  :mode ("\\.mzn\\'" . minizinc-mode))
 
-(when (executable-find "nix")
-  (use-package nix-mode
-    :mode "\\.nix\\'"))
+(use-package nix-mode
+  :mode "\\.nix\\'")
 
 ;; (use-package omnisharp
 ;;   :after (company)
@@ -571,11 +565,19 @@
 ;;   :config
 ;;   (add-to-list 'company-backends #'company-omnisharp))
 
+(use-package mcore-mode
+  :ensure nil
+  :mode ("\\.mc\\'" . mcore-mode))
+
+(use-package mcore-syn-mode
+  :ensure nil
+  :mode ("\\.syn\\'" . miking-syn-mode))
+
 (use-package fish-mode
   :mode ("\\.fish\\'" . fish-mode))
 
-(when (executable-find "jq")
-  (use-package jq-mode))
+(use-package jq-mode
+  :mode ("\\.jq\\'" . jq-mode))
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
@@ -592,6 +594,8 @@
   (use-package envrc
     :config
     (envrc-global-mode)))
+
+(use-package esup)
 
 ; ==== Custom stuff (can't seem to make it not appear, at least for the moment) ====
 

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, fish-gi, ... }@inputs:
+{ config, lib, pkgs, fish-gi, miking-emacs, ... }@inputs:
 
 let
   sway-switch-workspace = pkgs.writeTextFile {
@@ -594,9 +594,18 @@ rec {
 
   programs.emacs = {
     enable = true;
-    package = pkgs.emacs29-pgtk;
+    package = (pkgs.emacsPackagesFor pkgs.emacs29-pgtk).emacsWithPackages
+      (epkgs: builtins.attrValues {
+        inherit (epkgs.treesit-grammars) with-all-grammars;
+      } ++
+      [ (epkgs.trivialBuild rec {
+          pname = "miking-emacs";
+          src = miking-emacs;
+        })
+      ]);
   };
   xdg.configFile."emacs/init.el".source = ./dotfiles/emacs/init.el;
+  xdg.configFile."emacs/early-init.el".source = ./dotfiles/emacs/early-init.el;
   xdg.configFile."emacs/lisp".source = ./dotfiles/emacs/lisp;
 
   programs.direnv = {

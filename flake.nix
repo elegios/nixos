@@ -19,6 +19,10 @@
       url = "github:oh-my-fish/plugin-gi";
       flake = false;
     };
+    miking-emacs = {
+      url = "github:miking-lang/miking-emacs";
+      flake = false;
+    };
   };
   outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, ... }@inputs: {
     nixosConfigurations = {
@@ -39,7 +43,7 @@
 
             home-manager.users.vipa = import ./home.nix;
 
-            home-manager.extraSpecialArgs = with inputs; { inherit fish-gi; };
+            home-manager.extraSpecialArgs = with inputs; { inherit fish-gi miking-emacs; };
           }
         ];
       };

@@ -95,6 +95,22 @@
         "type": "github"
       }
     },
+    "miking-emacs": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1691999523,
+        "narHash": "sha256-dCyhl5tdtjUjPGiPGUBA9bF1YdQ2WbN/JgRJMUMYUro=",
+        "owner": "miking-lang",
+        "repo": "miking-emacs",
+        "rev": "aeb474d4fac7f56c65d82240d908c32601f19b03",
+        "type": "github"
+      },
+      "original": {
+        "owner": "miking-lang",
+        "repo": "miking-emacs",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1689320556,
@@ -131,6 +147,7 @@
       "inputs": {
         "fish-gi": "fish-gi",
         "home-manager": "home-manager",
+        "miking-emacs": "miking-emacs",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "stylix": "stylix"
