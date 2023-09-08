@@ -278,6 +278,7 @@ rec {
         startup = [
           { command = "waybar"; }
           { command = "ulauncher --hide-window > ~/logs/ulauncher.log 2>&1"; }
+          { command = "${unset-idle}"; }
         ];
         input."type:keyboard" = {
           xkb_layout = "se";
