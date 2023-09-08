@@ -1,0 +1,11 @@
+#!/usr/bin/env fish
+
+set curr_id (jj log --revisions @ --template 'commit_id' --no-graph)
+if test $status -ne 0
+    echo "Couldn't find commit id of current revision"
+    exit 1
+end
+
+jj restore --from $argv[1] && \
+jj new && \
+jj restore --from $curr_id

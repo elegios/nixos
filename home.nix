@@ -179,12 +179,12 @@ rec {
       user.email = "vipa@kth.se";
       merge-tools.difftastic = {
         program = "${pkgs.difftastic}/bin/difft";
-        diff-args = ["--color=auto" "--display=side-by-side" "$left" "$right"];
+        diff-args = ["--color=always" "$left" "$right"];
       };
+      ui.diff.tool = "difftastic";
       aliases = {
-        clean = ["abandon" ''(default() & empty()) ~ (@ | origin_branches())''];
-        ls = ["log" "--revisions" ''(default() & (origin_branches()+ & :@)):''];
-        leaves = ["log" "--revisions" ''leaves(all()) | roots(default())''];
+        ls = ["log" "--revisions" ''default() & and_parents((::@ ~ public())::)''];
+        leaves = ["log" "--no-graph" "--revisions" ''leaves(all())''];
       };
       revsets.log = "default()";
       templates.log = "myOneline";
@@ -192,20 +192,22 @@ rec {
       git.push = "fork";
       ui.pager = "less -FRX";
       revset-aliases = {
+        "public()" = "::origin_branches()";
         "and_parents(x)" = ''x | x-'';
         "leaves(x)" = ''heads(x)'';
         "default()" = ''and_parents(@ | (origin_branches()..)) | heads(origin_branches())'';
-        "origin_branches()" = ''remote_branches(remote=origin)'';
+        "origin_branches()" = ''remote_branches(remote=exact:origin)'';
       };
       template-aliases = {
-        "format_short_id(id)" = ''id.shortest(7)'';
+        "format_short_id(id)" = ''id.shortest(4)'';
         "format_timestamp(timestamp)" = ''timestamp.ago()'';
         myOneline = ''
           label(if(current_working_copy, "working_copy"),
             separate(" ",
               if(divergent,
-                label("divergent", format_short_id(change_id) ++ "??"),
+                label("divergent", format_short_id(change_id)),
                 format_short_id(change_id)),
+              format_short_id(commit_id),
               if(description, description.first_line(), description_placeholder),
               if(empty, label("empty", "(empty)")),
               if(conflict, label("conflict", "conflict")),
