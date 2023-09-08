@@ -569,7 +569,7 @@
   :ensure nil
   :mode ("\\.mc\\'" . mcore-mode))
 
-(use-package mcore-syn-mode
+(use-package miking-syn-mode
   :ensure nil
   :mode ("\\.syn\\'" . miking-syn-mode))
 

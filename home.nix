@@ -600,6 +600,7 @@ rec {
       } ++
       [ (epkgs.trivialBuild rec {
           pname = "miking-emacs";
+          version = "1";
           src = miking-emacs;
         })
       ]);
