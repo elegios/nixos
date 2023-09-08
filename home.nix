@@ -81,6 +81,7 @@ rec {
     tup
     just
     libnotify
+    (callPackage ./pkgs/edir {})
 
     # networking tools
     dnsutils  # `dig` + `nslookup`
