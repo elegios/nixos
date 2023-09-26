@@ -145,6 +145,25 @@ rec {
       };
   };
 
+  systemd.user.services.maestral = {
+    Unit.Description = "Maestral daemon";
+    Install.WantedBy = [ "default.target" ];
+    Service = {
+      ExecStart = "${pkgs.maestral-gui}/bin/maestral start -f";
+      ExecStop = "${pkgs.maestral-gui}/bin/maestral stop";
+      Restart = "on-failure";
+      Nice = 10;
+    };
+  };
+  systemd.user.services.maestral_qt = {
+    Unit.Description = "Maestral daemon";
+    Install.WantedBy = [ "sway-session.target" ];
+    Service = {
+      ExecStart = "${pkgs.maestral-gui}/bin/maestral_qt";
+      Restart = "on-failure";
+    };
+  };
+
   # TODO(vipa, 2023-07-29): This seems broken atm: https://github.com/nix-community/home-manager/issues/4226
   # services.dropbox = {
   #   enable = true;
