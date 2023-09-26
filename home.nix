@@ -394,6 +394,7 @@ rec {
           { command = "floating enable, sticky enable"; criteria = { title = "^Firefox — Sharing Indicator$"; app_id = "firefox"; }; }
           { command = "floating enable, border none, sticky enable"; criteria = { title = "^as_toolbar$"; app_id = ""; }; }
           { command = "floating enable, border none"; criteria = { title = "^zoom$"; app_id = ""; }; }
+          { command = ''title_format title_format "%title :: %shell"''; criteria = { shell = "^xwayland$"; }; }
         ];
         output."*".bg = "${config.stylix.image} fill";
         gaps.smartBorders = "on";
@@ -658,8 +659,6 @@ rec {
     enable = true;
     settings.SD_ROOT = "${config.xdg.configHome}/nixos/dotfiles/sd-root";
   };
-
-  programs.nix-index.enable = true;
 
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage
