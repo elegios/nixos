@@ -137,7 +137,7 @@ rec {
     Service =
       let
         script = pkgs.writeShellScript "clear-downloads" ''
-          find ~/Downloads/ -mindepth 1 -maxdepth 1 -ctime +3 -delete
+          ${pkgs.findutils}/bin/find ~/Downloads/ -mindepth 1 -maxdepth 1 -ctime +3 -exec rm -r "{}" \;
         '';
       in {
         Type = "oneshot";
