@@ -2,7 +2,8 @@
 {
   description = "NixOS config through a flake";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # TODO(vipa, 2023-10-10): Fix when typst treesitter grammar works again
+    nixpkgs.url = "github:NixOS/nixpkgs/d2b457aa9a7bc4f62fef4b3e6f3cd5646eb0277a";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     home-manager = {
       # url = "github:elegios/home-manager/release-23.05";

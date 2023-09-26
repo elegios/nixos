@@ -1,0 +1,6 @@
+#!/usr/bin/env fish
+
+# Use nixos-rebuild with a printed diff
+
+sudo nixos-rebuild switch
+and nvd diff /nix/var/nix/profiles/system-(nixos-rebuild list-generations --json | jq 'limit(2;.[].generation)' | tac)-link

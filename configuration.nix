@@ -79,11 +79,6 @@ in
     curl
     ulauncher
     fish
-    firefox
-    spotify
-    keepassxc
-    signal-desktop
-    alacritty # gpu accelerated terminal
     dbus-sway-environment
     waybar
     configure-gtk

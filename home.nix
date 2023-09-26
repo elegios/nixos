@@ -52,17 +52,21 @@ rec {
   # Packages that should be installed to the user profile.
 
   home.packages = with pkgs; [
-    pavucontrol
+    # apps
     obsidian
     zoom-us
+    spotify
     zotero
     # TODO(vipa, 2023-07-29): Setting up thunderbird currently
     # requires editing ~/.thunderbird/profiles.ini to point to the
     # profile directory inside Dropbox. Ideally this would be set-up
     # automatically
     thunderbird
+    firefox
     sway-switch-workspace
     maestral-gui
+    keepassxc
+    signal-desktop
     (nerdfonts.override { fonts = ["UbuntuMono"]; })
 
     # archives
@@ -73,13 +77,12 @@ rec {
     dtrx
 
     # utils
+    pavucontrol
     ripgrep # recursively searches directories for a regex pattern
     jq # A lightweight and flexible command-line JSON processor
     meld
     visidata
     entr
-    tup
-    just
     libnotify
     (callPackage ./pkgs/edir {})
 
@@ -104,6 +107,7 @@ rec {
     # it provides the command `nom` works just like `nix`
     # with more details log output
     nix-output-monitor
+    nvd
 
     btop  # replacement of htop/nmon
     iotop # io monitoring
@@ -215,7 +219,7 @@ rec {
         "and_parents(x)" = ''x | x-'';
         "leaves(x)" = ''heads(x)'';
         "default()" = ''and_parents(@ | (origin_branches()..)) | heads(origin_branches())'';
-        "origin_branches()" = ''remote_branches(remote=exact:origin)'';
+        "origin_branches()" = ''remote_branches(remote=exact:"origin")'';
       };
       template-aliases = {
         "format_short_id(id)" = ''id.shortest(4)'';
@@ -394,7 +398,7 @@ rec {
           { command = "floating enable, sticky enable"; criteria = { title = "^Firefox — Sharing Indicator$"; app_id = "firefox"; }; }
           { command = "floating enable, border none, sticky enable"; criteria = { title = "^as_toolbar$"; app_id = ""; }; }
           { command = "floating enable, border none"; criteria = { title = "^zoom$"; app_id = ""; }; }
-          { command = ''title_format title_format "%title :: %shell"''; criteria = { shell = "^xwayland$"; }; }
+          { command = ''title_format "%title :: %shell"''; criteria = { shell = "^xwayland$"; }; }
         ];
         output."*".bg = "${config.stylix.image} fill";
         gaps.smartBorders = "on";
