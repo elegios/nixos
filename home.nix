@@ -250,7 +250,7 @@ rec {
       package = pkgs.nerdfonts.override { fonts = ["UbuntuMono"]; };
       name = "Ubuntu Mono Nerd Font";
     };
-    targets.alacritty.enable = true;
+    targets.kitty.enable = true;
     targets.gtk.enable = true;
     targets.fish.enable = true;
     targets.swaylock.enable = true;
@@ -293,7 +293,7 @@ rec {
         left = "h";
       in {
         bars = [];
-        terminal = "alacritty";
+        terminal = "kitty";
         startup = [
           { command = "waybar"; }
           { command = "ulauncher --hide-window > ~/logs/ulauncher.log 2>&1"; }
@@ -308,7 +308,7 @@ rec {
         input."type:pointer".pointer_accel = "-0.7";
         keybindings = {
           # External programs
-          "${mod}+Shift+Return" = "exec alacritty";
+          "${mod}+Shift+Return" = "exec kitty";
           "${mod}+space" = "exec ulauncher-toggle";
           # Sway and session things
           "${mod}+Shift+r" = "reload";
@@ -561,7 +561,7 @@ rec {
         tooltip-format-wifi = "{essid} ({signalStrength}%)";
         format-linked = "{ifname} (No IP) ";
         format-disconnected = "Disconnected ⚠";
-        on-click = "alacritty -e nmtui";
+        on-click = "kitty nmtui";
       };
       battery = {
         states = {
@@ -577,20 +577,20 @@ rec {
     };
   };
 
-  # alacritty - a cross-platform, GPU-accelerated terminal emulator
-  programs.alacritty = {
+  programs.kitty = {
     enable = true;
-    # custom settings
     settings = {
-      env.TERM = "xterm-256color";
-      font = {
-        size = 12;
-        draw_bold_text_with_bright_colors = true;
-      };
-      scrolling.multiplier = 5;
-      selection.save_to_clipboard = true;
-      shell.program = "fish";
+      shell = "fish";
     };
+    keybindings = {
+      "ctrl+shift+g" = "show_last_non_empty_command_output";
+      "ctrl+shift+up" = "scroll_to_prompt -1";
+      "ctrl+shift+down" = "scroll_to_prompt 1";
+      "ctrl+o" = "kitten hints --type path";
+    };
+    extraConfig = ''
+      mouse_map right doublepress ungrabbed mouse_select_command_output
+    '';
   };
 
   programs.bash = {
