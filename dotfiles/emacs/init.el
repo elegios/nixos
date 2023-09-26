@@ -590,6 +590,9 @@
 (use-package lua-mode
   :mode ("\\.lua\\'" . lua-mode))
 
+(use-package gdscript-mode
+  :mode ("\\.gd\\'" . gdscript-mode))
+
 (when (executable-find "direnv")
   (use-package envrc
     :config
