@@ -21,6 +21,29 @@ let
       swaymsg workspace $WORKSPACE
     '';
   };
+  sway-toggle-semi-fullscreen = pkgs.writeTextFile {
+    name = "sway-toggle-semi-fullscreen";
+    destination = "/bin/sway-toggle-semi-fullscreen";
+    executable = true;
+
+    text = ''
+      #!/usr/bin/env bash
+
+      LAYOUT=$(swaymsg -t get_tree --raw | jq --raw-output 'recurse(.nodes[]) | select(.nodes[].focused) | .layout')
+
+      case $LAYOUT in
+        splitv | stacked | stacking)
+          swaymsg layout toggle splitv stacking
+          ;;
+        splith | tabbed)
+          swaymsg layout toggle splith tabbed
+          ;;
+        *)
+          swaynag -t warning -m "Container had a weird layout: $LAYOUT"
+          ;;
+      esac
+    '';
+  };
   set-idle = pkgs.writeShellScript "set-idle" ''
     ${pkgs.coreutils}/bin/rm -f ~/.idle-end-time
   '';
@@ -64,6 +87,7 @@ rec {
     thunderbird
     firefox
     sway-switch-workspace
+    sway-toggle-semi-fullscreen
     maestral-gui
     keepassxc
     signal-desktop
@@ -310,6 +334,7 @@ rec {
         };
         input."type:touchpad".natural_scroll = "enabled";
         input."type:pointer".pointer_accel = "-0.7";
+        floating.modifier = mod;
         keybindings = {
           # External programs
           "${mod}+Shift+Return" = "exec kitty";
@@ -341,7 +366,7 @@ rec {
           "${mod}+Down" = "focus child";
           "${mod}+s" = "split toggle";
           "${mod}+Shift+s" = "split none";
-          "${mod}+f" = "layout toggle stacking split";
+          "${mod}+f" = "exec sway-toggle-semi-fullscreen";
           # Basic window movement
           "${mod}+${left}" = "focus left";
           "${mod}+${down}" = "focus down";
