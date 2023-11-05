@@ -11,6 +11,8 @@ shapes:
     string. Give the originating node this label, instead of
     defaulting to the `id`.
   - `kind` or `type`, containing a number, string, or boolean. Nodes
-    with the same `kind` are drawn with the same color.
+    with the same `kind` are drawn with the same color (10 colors).
+  - `shape`, containing a number, string, or boolean. Nodes with the
+    same `shape` are drawn with the same shape (2 shapes).
 - Array, in which case we recursively examine each element.
 - String, number, or boolean, behaving the same as `{id: <value>}`.

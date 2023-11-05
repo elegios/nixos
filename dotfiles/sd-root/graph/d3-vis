@@ -12,7 +12,7 @@ async function read(stream) {
 let graph = {nodes: [], links: []};
 let nodes = {};
 
-function registerNode(id, label, kind) {
+function registerNode(id, label, kind, shape) {
     let node = nodes[id];
     if (!node) {
         node = {id: id};
@@ -20,9 +20,11 @@ function registerNode(id, label, kind) {
         graph.nodes.push(node);
     }
     if (label)
-        node.label = id;
+        node.label = label;
     if (kind)
         node.kind = kind;
+    if (shape)
+        node.shape = shape;
 }
 
 function registerLink(source, target) {
@@ -42,11 +44,12 @@ function processInput(input) {
         let id = input.id || input.source || input.from;
         let label = input.label;
         let kind = input.kind || input.type;
-        registerNode(id, label, kind);
+        let shape = input.shape;
+        registerNode(id, label, kind, shape);
         let target = input.target || input.to;
         if (Array.isArray(target)) {
             target.forEach(t => registerLink(id, t));
-        } else {
+        } else if (target !== null && target !== undefined) {
             registerLink(id, target);
         }
     }
@@ -75,6 +78,9 @@ let html = `
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="//unpkg.com/d3-force-magnetic"></script>
   <script>
+    // TODO(vipa, 2023-10-31): 'up-triangle', 'down-triangle', 'rhombus'
+    const shapes = ['circle', 'rect'];
+
     const canvas = document.getElementById("canvas");
     const context = canvas.getContext("2d");
 
@@ -95,6 +101,7 @@ let html = `
       initialX = d => d.initialX,
       initialY = d => d.initialY,
       nodeGroup, // given d in nodes, returns an (ordinal) value for color
+      nodeShape, // given d in nodes, returns an (ordinal) value for the shape
       nodeGroups, // an array of ordinal values representing the node groups
       nodeFill = "currentColor", // node stroke fill (if not using a group color encoding)
       nodeStroke = "#fff", // node stroke color
@@ -123,6 +130,7 @@ let html = `
       const LS = d3.map(links, linkSource).map(intern);
       const LT = d3.map(links, linkTarget).map(intern);
       const G = nodeGroup == null ? null : d3.map(nodes, nodeGroup).map(intern);
+      const S = nodeShape == null ? null : d3.map(nodes, nodeShape).map(intern)
       const W = typeof linkStrokeWidth !== "function" ? null : d3.map(links, linkStrokeWidth);
       const L = typeof linkStroke !== "function" ? null : d3.map(links, linkStroke);
 
@@ -131,10 +139,13 @@ let html = `
       links = d3.map(links, (_, i) => ({source: LS[i], target: LT[i]}));
 
       // Compute default domains.
+      let nodeShapes = null;
       if (G && nodeGroups === undefined) nodeGroups = d3.sort(G);
+      if (S) nodeShapes = d3.sort(S);
 
       // Construct the scales.
       const color = nodeGroup == null ? null : d3.scaleOrdinal(nodeGroups, colors);
+      const shape = nodeShape == null ? null : d3.scaleOrdinal(nodeShapes, shapes);
 
       // Construct the forces.
       const forceEndDist = Math.max(canvas.width, canvas.height);
@@ -216,7 +227,7 @@ let html = `
         context.globalAlpha = nodeStrokeOpacity;
         for (const [i, node] of nodes.entries()) {
           context.beginPath();
-          drawNode(node)
+          drawNode(node, S ? shape(S[i]) : shapes[0])
           context.fillStyle = G ? color(G[i]): nodeFill;
           context.strokeStyle = nodeStroke;
           context.fill();
@@ -239,9 +250,16 @@ let html = `
         context.lineTo(d.target.x, d.target.y);
       }
 
-      function drawNode(d) {
-        context.moveTo(d.x + nodeRadius, d.y);
-        context.arc(d.x, d.y, nodeRadius, 0, 2 * Math.PI);
+      function drawNode(d, shape) {
+        switch (shape) {
+          case 'circle':
+            context.moveTo(d.x + nodeRadius, d.y);
+            context.arc(d.x, d.y, nodeRadius, 0, 2 * Math.PI);
+            break;
+          case 'rect':
+            context.rect(d.x - nodeRadius, d.y - nodeRadius, 2*nodeRadius, 2*nodeRadius);
+            break;
+        }
       }
 
       if (invalidation != null) invalidation.then(() => simulation.stop());
@@ -288,17 +306,8 @@ let html = `
       let nextColorId = 1;
       let colorIds = {};
       ForceGraph(graph, {
-        nodeGroup: n => {
-          if (n.kind) {
-            if (!colorIds[n.kind]) {
-              colorIds[n.kind] = nextColorId;
-              nextColorId++;
-            }
-            return colorIds[n.kind];
-          } else {
-            return 0;
-          }
-        },
+        nodeGroup: n => n.kind || 0,
+        nodeShape: n => n.shape || 0,
       });
     });
   </script>
