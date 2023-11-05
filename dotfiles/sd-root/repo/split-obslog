@@ -1,5 +1,7 @@
 #!/usr/bin/env fish
 
+# Pretend that you did `jj new` after the state at `arg`
+
 set curr_id (jj log --revisions @ --template 'commit_id' --no-graph)
 if test $status -ne 0
     echo "Couldn't find commit id of current revision"
