@@ -222,6 +222,7 @@
   :config
   (projectile-mode 1)
   (add-to-list 'projectile-globally-ignored-directories "^\\.tup$")
+  (add-to-list 'projectile-project-root-files-bottom-up ".jj")
   (when (eq system-type 'windows-nt)
     (setq projectile-indexing-method 'alien)))
 
@@ -261,11 +262,12 @@
 ;; (use-package outshine)
 ;; Oscar had a short function that might be a good fit?
 
-(use-package column-marker
-  :ensure nil)
+(use-package bm
+  :commands (bm-next bm-toggle)
+  :config
+  (setq bm-highlight-style 'bm-highlight-only-fringe))
 
 (use-package ele
-  :after column-marker
   :ensure nil)
 
 (use-package sam
@@ -287,6 +289,9 @@
         ("[" . ele/wrap-region-in-pair)
         ("{" . ele/wrap-region-in-pair)
         ("\"" . ele/wrap-region-in-pair)))
+
+(use-package atomic-chrome
+  :commands (atomic-chrome-start-server))
 
 ; The setup here is for basic, available anywhere stuff
 (use-package ryo-modal
@@ -426,8 +431,8 @@
     ("u" undo)
     ("|" ele/shell-command)
     ("t" ele/c-god)
-    ("z" ele/goto-bookmark)
-    ("Z" ele/set-bookmark)
+    ("z" bm-next)
+    ("Z" bm-toggle)
     ("S" sam-eval-last-command)
     ("C" ele/toggle-case)
 

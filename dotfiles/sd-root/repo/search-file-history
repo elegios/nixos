@@ -1,0 +1,11 @@
+#!/usr/bin/env fish
+
+# <file> <rg-args>...
+for rev in (jj log --revisions 'file("'$argv[1]'")' --template 'format_short_id(commit_id) ++ "\n"' --no-graph)
+    set -l res (jj cat $argv[1] --revision $rev | rg $argv[2..])
+    if test $status -eq 0
+        echo
+        echo $rev
+        string join "\n" $res
+    end
+end

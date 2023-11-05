@@ -538,7 +538,9 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
             (upcase-region (match-beginning 0) (match-end 0))
           (downcase-region (match-beginning 0) (match-end 0)))))))
 
-(defvar ele/grid-columns '(0 10 28 50 200))
+(defvar ele/grid-columns '(10 28 50 72))
+(defvar ele/grid-hori-radius 30) ; Columns
+(defvar ele/grid-vert-radius ) ; Fraction of window height
 (defvar ele/grid-column-keys '(?a ?o ?e ?u))
 (defvar ele/grid-row-keys '(?h ?t ?n ?s))
 
@@ -568,6 +570,30 @@ are only those fully contained within the given rectangle."
     (nreverse candidates)))
 
 (defvar ele/grid-face 'highlight)
+
+;; TODO(vipa, 2023-11-27): This tries to set up line numbering
+;; relative to the visual beginning of the window, plus major-tick
+;; highlights at 4 evenly spaced points in the buffer. Unfortunately
+;; the latter doesn't seem to update nicely in all cases.
+(when nil
+  (add-to-list
+   'window-scroll-functions
+   (lambda (wnd start)
+     (when (or (eq wnd (selected-window))
+               (not (eq (window-buffer wnd) (window-buffer (selected-window)))))
+       (with-selected-window wnd
+         (let* ((lines (window-body-height wnd))
+                (tick-length (ceiling (/ lines 4))))
+           (setq display-line-numbers-major-tick tick-length)
+           (setq display-line-numbers-offset
+                 (- (1- (line-number-at-pos start)))))))))
+  (setq display-line-numbers-width 2)
+  (setq window-scroll-functions nil)
+  (setq display-line-numbers-offset 0))
+
+(defun ele/igoto-around-point (vcol vrow)
+  "."
+  )
 
 (defun ele/show-grid ()
   "."

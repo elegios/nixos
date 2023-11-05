@@ -104,10 +104,12 @@ rec {
     pavucontrol
     ripgrep # recursively searches directories for a regex pattern
     jq # A lightweight and flexible command-line JSON processor
+    jless
     meld
     visidata
     entr
     libnotify
+    nodejs_20
     (callPackage ./pkgs/edir {})
 
     # networking tools
@@ -286,6 +288,8 @@ rec {
   };
 
   programs.zathura.enable = true;
+  # TODO(vipa, 2023-10-24): This seems like it might be nicer for paper reading, but it renders poorly, maybe look into later
+  programs.sioyek.enable = true;
 
   # NOTE(vipa, 2023-07-22): First attempt at global theme switching, unfortunately causes infinite recursion
   # specialisation.dark.configuration = {
@@ -611,6 +615,7 @@ rec {
     enable = true;
     settings = {
       shell = "fish";
+      scrollback_page_history_size = 2;
     };
     keybindings = {
       "ctrl+shift+g" = "show_last_non_empty_command_output";
