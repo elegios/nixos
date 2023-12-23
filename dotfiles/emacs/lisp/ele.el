@@ -538,6 +538,32 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
             (upcase-region (match-beginning 0) (match-end 0))
           (downcase-region (match-beginning 0) (match-end 0)))))))
 
+(defun ele/bash-and-update-output (b e)
+  "Run current line (or region if active) as shell code and insert/update output.
+
+B is the initial point of the command to run, E is the end point."
+  (interactive
+   (if (region-active-p)
+       (list (region-beginning) (region-end))
+     (list (line-beginning-position)
+           (line-end-position))))
+  (save-excursion
+    ;; delete old output
+    (delete-region
+     (progn (forward-line) (point))
+     (progn (while (get-text-property (point) '$$)
+              (forward-line))
+            (point)))
+
+    (unless (bolp) (insert "\n"))
+    (let* ((command (buffer-substring-no-properties b e))
+           (output (with-temp-buffer
+                     (shell-command command t nil)
+                     (buffer-string)))
+           (start (point)))
+      (insert (propertize output '$$ t 'rear-nonsticky t))
+      (pulse-momentary-highlight-region start (point)))))
+
 (defvar ele/grid-columns '(10 28 50 72))
 (defvar ele/grid-hori-radius 30) ; Columns
 (defvar ele/grid-vert-radius ) ; Fraction of window height

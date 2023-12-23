@@ -23,8 +23,12 @@
       url = "github:miking-lang/miking-emacs";
       flake = false;
     };
+    nixseparatedebuginfod = {
+      url = "github:symphorien/nixseparatedebuginfod";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, nixseparatedebuginfod, ... }@inputs: {
     nixosConfigurations = {
       "vipa-nixos" = nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";
@@ -32,6 +36,7 @@
           ./configuration.nix
           stylix.nixosModules.stylix
           nixos-hardware.nixosModules.dell-xps-13-9380
+          nixseparatedebuginfod.nixosModules.default
 
           # make home-manager as a module of nixos
           # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`

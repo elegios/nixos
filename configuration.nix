@@ -131,6 +131,8 @@ in
     HandleLidSwitchDocked=suspend
   '';
 
+  services.nixseparatedebuginfod.enable = true;
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -156,6 +158,8 @@ in
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.permittedInsecurePackages = [ "electron-25.9.0" ];
+
 
   # enable sway window manager
   programs.sway = {

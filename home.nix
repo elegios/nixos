@@ -85,12 +85,15 @@ rec {
     # profile directory inside Dropbox. Ideally this would be set-up
     # automatically
     thunderbird
+    morgen
     firefox
     sway-switch-workspace
     sway-toggle-semi-fullscreen
     maestral-gui
     keepassxc
     signal-desktop
+    qalculate-qt
+    libqalculate
     (nerdfonts.override { fonts = ["UbuntuMono"]; })
 
     # archives
@@ -104,6 +107,7 @@ rec {
     pavucontrol
     ripgrep # recursively searches directories for a regex pattern
     jq # A lightweight and flexible command-line JSON processor
+    gron
     jless
     meld
     visidata
@@ -201,6 +205,10 @@ rec {
   # };
 
   programs.gh.enable = true;
+  programs.gh.settings = {
+    # Workaround for https://github.com/nix-community/home-manager/issues/4744
+    version = 1;
+  };
   programs.git = {
     enable = true;
     userName = "Viktor Palmkvist";
@@ -289,7 +297,12 @@ rec {
 
   programs.zathura.enable = true;
   # TODO(vipa, 2023-10-24): This seems like it might be nicer for paper reading, but it renders poorly, maybe look into later
-  programs.sioyek.enable = true;
+  programs.sioyek = {
+    enable = true;
+    config = {
+      vertical_move_amount = "3";
+    };
+  };
 
   # NOTE(vipa, 2023-07-22): First attempt at global theme switching, unfortunately causes infinite recursion
   # specialisation.dark.configuration = {
@@ -640,6 +653,11 @@ rec {
       set fish_greeting
       set -gx EDITOR emacs
       set -gx PAGER "less -R"
+
+      function multicd
+        echo cd (string repeat -n (math (string length -- $argv[1]) - 1) ../)
+      end
+      abbr --add dotdot --regex '^\.\.+$' --function multicd
     '';
     plugins = with pkgs.fishPlugins; [
       { name = "tide"; src = tide.src; }

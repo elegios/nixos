@@ -1,0 +1,25 @@
+#!/usr/bin/env fish
+
+# Take a list of files, then partition based on executable-bit and execution result
+
+set nonExec
+set execSuccess
+set execFail
+for f in $argv
+    if command -q $f
+        if $f
+            set --append execSuccess $f
+        else
+            set --append execFail $f
+        end
+    else
+        set --append nonExec $f
+    end
+end
+
+echo "Non-executables ("(count $nonExec)"):"
+echo " " $nonExec
+echo "Executable success ("(count $execSuccess)"):"
+echo " " $execSuccess
+echo "Executable failure ("(count $execFail)"):"
+echo " " $execFail

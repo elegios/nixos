@@ -450,6 +450,7 @@
       ("," smex)
       ("s" ele/save-all)
       ("i" ele/increment-number-decimal)
+      ("SPC" ele/bash-and-update-output)
       ("w" fill-paragraph)
       ("q" save-buffers-kill-terminal)))
 
@@ -590,7 +591,8 @@
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :config
-  (define-key markdown-mode-map (kbd "<S-iso-lefttab>") nil))
+  (define-key markdown-mode-map (kbd "<S-iso-lefttab>") nil)
+  (setq markdown-fontify-code-blocks-natively t))
 
 (use-package lua-mode
   :mode ("\\.lua\\'" . lua-mode))
