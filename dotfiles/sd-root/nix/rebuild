@@ -2,5 +2,5 @@
 
 # Use nixos-rebuild with a printed diff
 
-sudo nixos-rebuild switch
+sudo nixos-rebuild switch $argv
 and nvd diff /nix/var/nix/profiles/system-(nixos-rebuild list-generations --json | jq 'limit(2;.[].generation)' | tac)-link
