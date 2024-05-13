@@ -65,9 +65,9 @@ in
   networking.networkmanager.enable = true;
 
   services.xserver = {
-    layout = "se";
-    xkbVariant = "svdvorak";
-    xkbOptions = "caps:backspace";
+    xkb.layout = "se";
+    xkb.variant = "svdvorak";
+    xkb.options = "caps:backspace";
   };
   console.useXkbConfig = true;
 
@@ -96,7 +96,7 @@ in
     wdisplays # tool to configure displays
   ];
 
-  fonts.fonts = [ pkgs.font-awesome_5 ];
+  fonts.packages = [ pkgs.font-awesome_5 ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.vipa = {
