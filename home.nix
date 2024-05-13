@@ -63,6 +63,14 @@ let
       echo IDLE
     fi
   '';
+  custom-jless = pkgs.jless.overrideAttrs (old: {
+    cargoBuildNoDefaultFeatures = true;
+    cargoCheckNoDefaultFeatures = true;
+    patches = old.patches ++ [(pkgs.fetchpatch {
+      url = "https://github.com/PaulJuliusMartinez/jless/pull/121.patch";
+      hash = "sha256-YlojwH2ITbq2l/7bOSF6qsMhkgqe6Xm7p3P/ZgiLSCU=";
+    })];
+  });
 in
 
 rec {
@@ -104,11 +112,12 @@ rec {
     dtrx
 
     # utils
+    fd
     pavucontrol
     ripgrep # recursively searches directories for a regex pattern
     jq # A lightweight and flexible command-line JSON processor
     gron
-    jless
+    custom-jless
     meld
     visidata
     entr
@@ -646,6 +655,7 @@ rec {
     enableCompletion = true;
   };
 
+  home.shellAliases.jless = "jless --clipboard-cmd wl-copy";
   programs.fish = {
     enable = true;
     interactiveShellInit = ''
@@ -654,10 +664,25 @@ rec {
       set -gx EDITOR emacs
       set -gx PAGER "less -R"
 
+      # Expand ... to ../.., .... to ../../.., etc.
       function multicd
         echo cd (string repeat -n (math (string length -- $argv[1]) - 1) ../)
       end
       abbr --add dotdot --regex '^\.\.+$' --function multicd
+
+      # Auto-complete revisions and branches for `jj` commands
+      function __changes
+        jj log -r :: --no-graph -T 'change_id.shortest() ++ "\t" ++  description.first_line() ++ "\n"'
+      end
+      function __branches
+        jj log -r 'branches()' --no-graph -T 'branches.map(|b| b.name() ++ "\t" ++ description.first_line() ++ "\n")'
+      end
+      complete -f -c jj -s r -l revision -r -d 'Revision' -ka '( __changes )'
+      complete -f -c jj -n '__fish_seen_subcommand_from show' -ka '(__changes)'
+      complete -f -c jj -n '__fish_seen_subcommand_from branch set' -ka '(__branches)'
+      complete -f -c jj -n '__fish_seen_subcommand_from branch track' -ka '(__branches)'
+      complete -f -c jj -n '__fish_seen_subcommand_from new' -ka '(__branches; __changes)'
+      complete -f -c jj -n '__fish_seen_subcommand_from new' -s b -ka '(__branches)'
     '';
     plugins = with pkgs.fishPlugins; [
       { name = "tide"; src = tide.src; }
@@ -711,6 +736,8 @@ rec {
     enable = true;
     settings.SD_ROOT = "${config.xdg.configHome}/nixos/dotfiles/sd-root";
   };
+
+  xdg.configFile."fd/ignore".text = ".jj/";
 
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage

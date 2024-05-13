@@ -1,6 +1,14 @@
 
 {
   description = "NixOS config through a flake";
+  nixConfig = {
+    extra-substituters = [
+      "https://nix-community.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+  };
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -10,10 +18,12 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    base16.url = "github:SenchoPens/base16.nix/b390e";
     stylix = {
       url = "github:danth/stylix/release-22.11";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
+      inputs.base16.follows = "base16";
     };
     fish-gi = {
       url = "github:oh-my-fish/plugin-gi";
@@ -23,12 +33,8 @@
       url = "github:miking-lang/miking-emacs";
       flake = false;
     };
-    nixseparatedebuginfod = {
-      url = "github:symphorien/nixseparatedebuginfod";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
-  outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, nixseparatedebuginfod, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, ... }@inputs: {
     nixosConfigurations = {
       "vipa-nixos" = nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";
@@ -36,7 +42,6 @@
           ./configuration.nix
           stylix.nixosModules.stylix
           nixos-hardware.nixosModules.dell-xps-13-9380
-          nixseparatedebuginfod.nixosModules.default
 
           # make home-manager as a module of nixos
           # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
