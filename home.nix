@@ -240,6 +240,11 @@ rec {
 
   programs.jujutsu = {
     enable = true;
+    # NOTE(vipa, 2024-05-13): The way the `ediff` option is
+    # implemented overwrites any `merge-tools` in `settings` it seems
+    # like, so I turn it off for now. Relevant PR:
+    # https://github.com/nix-community/home-manager/pull/5371
+    ediff = false;
     settings = {
       user.name = "Viktor Palmkvist";
       user.email = "vipa@kth.se";
