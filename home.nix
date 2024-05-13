@@ -1,4 +1,4 @@
-{ config, lib, pkgs, fish-gi, miking-emacs, ... }@inputs:
+{ config, lib, pkgs, fish-gi, miking-emacs, typst-ts-mode, ... }@inputs:
 
 let
   sway-switch-workspace = pkgs.writeTextFile {
@@ -140,6 +140,7 @@ rec {
     gawk
     zstd
     gnupg
+    languagetool
 
     # nix related
     #
@@ -295,6 +296,7 @@ rec {
   };
 
   stylix = {
+    enable = true;
     autoEnable = false;
     image = ./assets/wallpaper.png;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/solarized-dark.yaml";
@@ -660,14 +662,24 @@ rec {
     enableCompletion = true;
   };
 
-  home.shellAliases.jless = "jless --clipboard-cmd wl-copy";
   programs.fish = {
     enable = true;
+    functions.jless = ''
+      if contains -- --help $argv
+          command jless $argv
+          return
+      end
+      if isatty
+          echo "This jless alias requires input to be given over stdin"
+          return 1
+      end
+      jq -R '. as $line | try fromjson catch ("-> " + $line)' | command jless --clipboard-cmd wl-copy $argv
+    '';
     interactiveShellInit = ''
       bind \b 'backward-kill-word'
       set fish_greeting
       set -gx EDITOR emacs
-      set -gx PAGER "less -R"
+      set -gx PAGER less -R
 
       # Expand ... to ../.., .... to ../../.., etc.
       function multicd
@@ -708,6 +720,11 @@ rec {
           pname = "miking-emacs";
           version = "1";
           src = miking-emacs;
+        })
+        (epkgs.trivialBuild rec {
+          pname = "typst-ts-mode";
+          version = "1";
+          src = typst-ts-mode;
         })
       ]);
   };

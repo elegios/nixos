@@ -110,6 +110,7 @@
   (which-key-mode))
 
 (use-package company
+  :diminish company-mode
   :demand t
   :bind
   (:map company-active-map
@@ -143,6 +144,7 @@
 ;;   (lsp-ui-doc-enable nil))
 
 (use-package eldoc
+  :diminish eldoc-mode
   :config
   (setq eldoc-echo-area-use-multiline-p nil)
   (setq eldoc-echo-area-prefer-doc-buffer t))
@@ -162,6 +164,12 @@
 (use-package flycheck
   :init
   (global-flycheck-mode))
+
+(use-package flycheck-eglot
+  :ensure t
+  :after (flycheck eglot)
+  :config
+  (global-flycheck-eglot-mode 1))
 
 (use-package corral
   :commands
@@ -296,6 +304,7 @@
 ; The setup here is for basic, available anywhere stuff
 (use-package ryo-modal
   :demand t
+  :diminish ryo-modal-mode
   :after (ele company)
   :commands (ryo-modal)
   :chords (("jk" . ele/enter-command-mode))
@@ -450,7 +459,7 @@
       ("," smex)
       ("s" ele/save-all)
       ("i" ele/increment-number-decimal)
-      ("SPC" ele/bash-and-update-output)
+      ("SPC" ele/shell-and-update-output)
       ("w" fill-paragraph)
       ("q" save-buffers-kill-terminal)))
 
@@ -584,6 +593,23 @@
 
 (use-package jq-mode
   :mode ("\\.jq\\'" . jq-mode))
+
+(use-package typst-ts-mode
+  :ensure nil
+  :mode ("\\.typ\\'" . typst-ts-mode))
+
+(use-package language-tool
+  :commands (languagetool-check
+             languagetool-clear-suggestions
+             languagetool-correct-at-point
+             languagetool-correct-buffer
+             languagetool-set-language
+             languagetool-server-mode
+             languagetool-server-start
+             languagetool-server-stop)
+  :config
+  (setq languagetool-java-arguments '("-Dfile.encoding=UTF-8")
+        languagetool-console-command "")
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)

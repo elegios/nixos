@@ -447,9 +447,10 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
 
 (defun ele/shell-command (command)
   (interactive (list (read-shell-command "Enter shell command: ")))
-  (if (use-region-p)
-      (shell-command-on-region (region-beginning) (region-end) command t t)
-    (shell-command command t))
+  (let ((shell-file-name (executable-find "fish")))
+    (if (use-region-p)
+        (shell-command-on-region (region-beginning) (region-end) command t t)
+      (shell-command command t)))
   (setq deactivate-mark nil))
 
 (defun ele/comment ()
@@ -491,7 +492,7 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
   (interactive "p")
   (if (use-region-p)
       (delete-region (region-beginning) (region-end))
-    (delete-char arg t)))
+    (delete-char arg nil)))
 
 (defun ele/switch-window ()
   (interactive)
@@ -538,7 +539,7 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
             (upcase-region (match-beginning 0) (match-end 0))
           (downcase-region (match-beginning 0) (match-end 0)))))))
 
-(defun ele/bash-and-update-output (b e)
+(defun ele/shell-and-update-output (b e)
   "Run current line (or region if active) as shell code and insert/update output.
 
 B is the initial point of the command to run, E is the end point."
@@ -558,8 +559,9 @@ B is the initial point of the command to run, E is the end point."
     (unless (bolp) (insert "\n"))
     (let* ((command (buffer-substring-no-properties b e))
            (output (with-temp-buffer
-                     (shell-command command t nil)
-                     (buffer-string)))
+                     (let ((shell-file-name (executable-find "fish")))
+                       (shell-command command t nil)
+                       (buffer-string))))
            (start (point)))
       (insert (propertize output '$$ t 'rear-nonsticky t))
       (pulse-momentary-highlight-region start (point)))))

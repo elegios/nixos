@@ -12,7 +12,7 @@
     };
     base16.url = "github:SenchoPens/base16.nix/b390e";
     stylix = {
-      url = "github:danth/stylix/release-22.11";
+      url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
       inputs.base16.follows = "base16";
@@ -23,6 +23,10 @@
     };
     miking-emacs = {
       url = "github:miking-lang/miking-emacs";
+      flake = false;
+    };
+    typst-ts-mode = {
+      url = "sourcehut:~meow_king/typst-ts-mode";
       flake = false;
     };
   };
@@ -39,13 +43,13 @@
           # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
           home-manager.nixosModules.home-manager
           {
-            stylix.image = ./assets/wallpaper.png;
+            stylix.homeManagerIntegration.followSystem = false;
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
 
             home-manager.users.vipa = import ./home.nix;
 
-            home-manager.extraSpecialArgs = with inputs; { inherit fish-gi miking-emacs; };
+            home-manager.extraSpecialArgs = with inputs; { inherit fish-gi miking-emacs typst-ts-mode; };
           }
         ];
       };
