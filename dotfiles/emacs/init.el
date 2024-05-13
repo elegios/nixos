@@ -520,16 +520,16 @@
     (add-hook 'elm-mode-hook 'elm-format-on-save-mode)))
 
 (use-package rust-mode
-  :mode ("\\.rs\\'" . rust-mode))
+  :mode ("\\.rs\\'" . rust-ts-mode))
 ;; (use-package rustic
 ;;   :mode ("\\.rs\\'" . rustic-mode)
-;;   :hook (rust-mode . lsp)
 ;;   :config
-;;   (setq rustic-format-trigger 'on-save)
-;;   (setq rustic-format-on-save t))
-;; (use-package flycheck-rust
-;;   :after rust-mode
-;;   :hook (flycheck-mode . flycheck-rust-setup)))
+;;   (setq rustic-lsp-client 'eglot)
+;;   (setq rustic-use-rust-save-some-buffers t)
+;;   (setq rustic-format-trigger 'on-save))
+(use-package flycheck-rust
+  :after rust-mode
+  :hook (flycheck-mode . flycheck-rust-setup))
 
 (use-package haskell-mode
   :ryo
