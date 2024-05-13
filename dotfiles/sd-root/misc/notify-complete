@@ -1,0 +1,11 @@
+#!/usr/bin/env fish
+
+# Run a command, then notify on completion
+
+set cmd (string shorten --max 20 (string join " " $argv))
+eval $argv
+set res $status
+set msg "\"$cmd\" finished, exit code: "$res
+echo $msg 1>&2
+notify-send --expire-time=5000 $msg
+exit $res
