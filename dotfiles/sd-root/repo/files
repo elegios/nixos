@@ -10,7 +10,7 @@ if which git >/dev/null 2>&1 && git ls-files --exclude-standard --other --cached
   exit 0
 end
 
-if which jj >/dev/null 2>&1 && jj files --no-pager 2>/dev/null
+if which jj >/dev/null 2>&1 && jj file list --no-pager 2>/dev/null
   exit 0
 end
 

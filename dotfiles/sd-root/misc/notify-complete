@@ -2,10 +2,26 @@
 
 # Run a command, then notify on completion
 
-set cmd (string shorten --max 20 (string join " " $argv))
+set cmd (string shorten --max 20 (string join " " -- $argv))
+set startTime (date +%s%N)
 eval $argv
 set res $status
-set msg "\"$cmd\" finished, exit code: "$res
+set endTime (date +%s%N)
+set ms (math "(" $endTime - $startTime ")" / 1000000)
+
+set --local secs (math --scale=1 $ms/1000 % 60)
+set --local mins (math --scale=0 $ms/60000 % 60)
+set --local hours (math --scale=0 $ms/3600000)
+
+set --local out
+
+test $hours -gt 0 && set --local --append out $hours"h"
+test $mins -gt 0 && set --local --append out $mins"m"
+test $secs -gt 0 && set --local --append out $secs"s"
+
+set duration (set --query out && echo $out || echo $ms"ms")
+
+set msg "\"$cmd\" finished in "$duration", exit code: "$res
 echo $msg 1>&2
 notify-send --expire-time=5000 $msg
 exit $res
