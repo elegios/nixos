@@ -140,7 +140,6 @@ rec {
     gawk
     zstd
     gnupg
-    languagetool
 
     # nix related
     #
@@ -727,6 +726,12 @@ rec {
           src = typst-ts-mode;
         })
       ]);
+    extraConfig = ''
+      (setq languagetool-java-arguments '("-Dfile.encoding=UTF-8" "-cp" "${pkgs.languagetool}/share/"))
+      (setq languagetool-java-bin "${pkgs.jre}/bin/java")
+      (setq languagetool-console-command "${pkgs.languagetool}/share/languagetool-commandline.jar")
+      (setq languagetool-server-command "${pkgs.languagetool}/share/languagetool-server.jar")
+    '';
   };
   xdg.configFile."emacs/init.el".source = ./dotfiles/emacs/init.el;
   xdg.configFile."emacs/early-init.el".source = ./dotfiles/emacs/early-init.el;

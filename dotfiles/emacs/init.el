@@ -598,7 +598,7 @@
   :ensure nil
   :mode ("\\.typ\\'" . typst-ts-mode))
 
-(use-package language-tool
+(use-package languagetool
   :commands (languagetool-check
              languagetool-clear-suggestions
              languagetool-correct-at-point
@@ -606,10 +606,7 @@
              languagetool-set-language
              languagetool-server-mode
              languagetool-server-start
-             languagetool-server-stop)
-  :config
-  (setq languagetool-java-arguments '("-Dfile.encoding=UTF-8")
-        languagetool-console-command "")
+             languagetool-server-stop))
 
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
