@@ -230,7 +230,9 @@
   :config
   (projectile-mode 1)
   (add-to-list 'projectile-globally-ignored-directories "^\\.tup$")
-  (add-to-list 'projectile-project-root-files-bottom-up ".jj")
+  (if (equal projectile-jj-command "jj files --no-pager . | tr '\\n' '\\0'")
+      (setq projectile-jj-command "jj file list --no-pager . | tr '\\n' '\\0'")
+    (message "projectile-jj-command seems to have been updated, see if this part can be removed from 'init.el'"))
   (when (eq system-type 'windows-nt)
     (setq projectile-indexing-method 'alien)))
 
