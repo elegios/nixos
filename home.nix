@@ -94,7 +94,6 @@ rec {
     # automatically
     thunderbird
     morgen
-    firefox
     sway-switch-workspace
     sway-toggle-semi-fullscreen
     maestral-gui
