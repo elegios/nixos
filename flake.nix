@@ -30,29 +30,41 @@
       flake = false;
     };
   };
-  outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, ... }@inputs: {
-    nixosConfigurations = {
-      "vipa-nixos" = nixpkgs.lib.nixosSystem rec {
-        system = "x86_64-linux";
-        modules = [
-          ./configuration.nix
-          stylix.nixosModules.stylix
-          nixos-hardware.nixosModules.dell-xps-13-9380
+  outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, ... }@inputs:
+    let hm = {
+          stylix.homeManagerIntegration.followSystem = false;
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
 
-          # make home-manager as a module of nixos
-          # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
-          home-manager.nixosModules.home-manager
-          {
-            stylix.homeManagerIntegration.followSystem = false;
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
+          home-manager.users.vipa = import ./home.nix;
 
-            home-manager.users.vipa = import ./home.nix;
-
-            home-manager.extraSpecialArgs = with inputs; { inherit fish-gi miking-emacs typst-ts-mode; };
-          }
-        ];
+          home-manager.extraSpecialArgs = with inputs; { inherit fish-gi miking-emacs typst-ts-mode; };
+        };
+    in
+      {
+        nixosConfigurations = {
+          "vipa-nixos" = nixpkgs.lib.nixosSystem rec {
+            system = "x86_64-linux";
+            modules = [
+              ./modules/common-configuration.nix
+              ./hosts/vipa-nixos/default.nix
+              stylix.nixosModules.stylix
+              nixos-hardware.nixosModules.dell-xps-13-9380
+              home-manager.nixosModules.home-manager
+              hm
+            ];
+          };
+          "viktpalm-linux" = nixpkgs.lib.nixosSystem rec {
+            system = "x86_64-linux";
+            modules = [
+              ./modules/common-configuration.nix
+              ./hosts/viktpalm-linux/default.nix
+              stylix.nixosModules.stylix
+              nixos-hardware.nixosModules.dell-xps-13-9740
+              home-manager.nixosModules.home-manager
+              hm
+            ];
+          };
+        };
       };
-    };
-  };
 }
