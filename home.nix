@@ -262,11 +262,11 @@ rec {
       git.push = "fork";
       ui.pager = "less -FRX";
       revset-aliases = {
-        "public()" = "::origin_branches()";
+        "public()" = "::origin_bookmarks()";
         "and_parents(x)" = ''x | x-'';
         "leaves(x)" = ''heads(x)'';
-        "default()" = ''and_parents(@ | (origin_branches()..)) | heads(origin_branches())'';
-        "origin_branches()" = ''remote_branches(remote=exact:"origin")'';
+        "default()" = ''and_parents(@ | (origin_bookmarks()..)) | heads(origin_bookmarks())'';
+        "origin_bookmarks()" = ''remote_bookmarks(remote=exact:"origin")'';
       };
       template-aliases = {
         "format_short_id(id)" = ''id.shortest(4)'';
@@ -281,7 +281,7 @@ rec {
               if(description, description.first_line(), description_placeholder),
               if(empty, label("empty", "(empty)")),
               if(conflict, label("conflict", "conflict")),
-              branches,
+              bookmarks,
               tags,
               working_copies,
               format_timestamp(committer.timestamp()),
@@ -660,6 +660,17 @@ rec {
     enableCompletion = true;
   };
 
+  home.activation.configure-tide = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    ${pkgs.fish}/bin/fish -c "tide configure --auto --style=Lean --prompt_colors='True color' --show_time='24-hour format' --lean_prompt_height='Two lines' --prompt_connection=Disconnected --prompt_spacing=Sparse --icons='Few icons' --transient=No"
+    ${pkgs.fish}/bin/fish -c "set -U tide_left_prompt_items pwd git jj newline character"
+    ${pkgs.fish}/bin/fish -c "set -U tide_right_prompt_items status cmd_duration context jobs node python rustc java php ruby go kubectl toolbox terraform aws nix_shell crystal time"
+    ${pkgs.fish}/bin/fish -c "set -U tide_jj_truncation_length 40"
+    ${pkgs.fish}/bin/fish -c "set -U tide_jj_icon"
+    ${pkgs.fish}/bin/fish -c "set -U tide_jj_color_conflict \$tide_git_color_conflicted"
+    ${pkgs.fish}/bin/fish -c "set -U tide_jj_color_description normal"
+    ${pkgs.fish}/bin/fish -c "set -U tide_jj_color_branch \$tide_git_color_branch"
+    ${pkgs.fish}/bin/fish -c "set -U tide_jj_color_content \$tide_git_color_staged"
+  '';
   programs.fish = {
     enable = true;
     functions.jless = ''
@@ -685,19 +696,19 @@ rec {
       end
       abbr --add dotdot --regex '^\.\.+$' --function multicd
 
-      # Auto-complete revisions and branches for `jj` commands
+      # Auto-complete revisions and bookmarks for `jj` commands
       function __changes
         jj log -r :: --no-graph -T 'change_id.shortest() ++ "\t" ++  description.first_line() ++ "\n"'
       end
-      function __branches
-        jj log -r 'branches()' --no-graph -T 'branches.map(|b| b.name() ++ "\t" ++ description.first_line() ++ "\n")'
+      function __bookmarks
+        jj log -r 'bookmarks()' --no-graph -T 'bookmarks.map(|b| b.name() ++ "\t" ++ description.first_line() ++ "\n")'
       end
       complete -f -c jj -s r -l revision -r -d 'Revision' -ka '( __changes )'
       complete -f -c jj -n '__fish_seen_subcommand_from show' -ka '(__changes)'
-      complete -f -c jj -n '__fish_seen_subcommand_from branch set' -ka '(__branches)'
-      complete -f -c jj -n '__fish_seen_subcommand_from branch track' -ka '(__branches)'
-      complete -f -c jj -n '__fish_seen_subcommand_from new' -ka '(__branches; __changes)'
-      complete -f -c jj -n '__fish_seen_subcommand_from new' -s b -ka '(__branches)'
+      complete -f -c jj -n '__fish_seen_subcommand_from bookmark set' -ka '(__bookmarks)'
+      complete -f -c jj -n '__fish_seen_subcommand_from bookmark track' -ka '(__bookmarks)'
+      complete -f -c jj -n '__fish_seen_subcommand_from new' -ka '(__bookmarks; __changes)'
+      complete -f -c jj -n '__fish_seen_subcommand_from new' -s b -ka '(__bookmarks)'
     '';
     plugins = with pkgs.fishPlugins; [
       { name = "tide"; src = tide.src; }

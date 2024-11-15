@@ -60,7 +60,7 @@
               ./modules/common-configuration.nix
               ./hosts/viktpalm-linux/default.nix
               stylix.nixosModules.stylix
-              nixos-hardware.nixosModules.dell-xps-13-9740
+              nixos-hardware.nixosModules.dell-xps-13-9343
               home-manager.nixosModules.home-manager
               hm
             ];
