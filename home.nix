@@ -109,6 +109,7 @@ rec {
     qalculate-qt
     libqalculate
     nerd-fonts.ubuntu-mono
+    anki
 
     # archives
     zip
