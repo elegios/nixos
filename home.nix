@@ -71,6 +71,13 @@ let
       hash = "sha256-YlojwH2ITbq2l/7bOSF6qsMhkgqe6Xm7p3P/ZgiLSCU=";
     })];
   });
+  toggle-theme = pkgs.writeShellScript "toggle-theme" ''
+    if [ -d "$(${pkgs.home-manager}/bin/home-manager generations | head -1 | rg -o '/[^ ]*')"/specialisation ]; then
+      "$(${pkgs.home-manager}/bin/home-manager generations | head -1 | rg -o '/[^ ]*')"/specialisation/light/activate
+    else
+      "$(${pkgs.home-manager}/bin/home-manager generations | head -2 | tail -1 | rg -o '/[^ ]*')"/activate
+    fi
+  '';
 in
 
 rec {
@@ -303,8 +310,8 @@ rec {
       name = "Ubuntu Mono Nerd Font";
     };
     targets.kitty.enable = true;
+    targets.kitty.variant256Colors = true;
     targets.gtk.enable = true;
-    targets.fish.enable = true;
     targets.swaylock.enable = true;
     targets.zathura.enable = true;
   };
@@ -318,14 +325,10 @@ rec {
     };
   };
 
-  # NOTE(vipa, 2023-07-22): First attempt at global theme switching, unfortunately causes infinite recursion
-  # specialisation.dark.configuration = {
-  #   wayland.windowManager.sway.config.keybindings."Mod4+v" = lib.mkForce "exec ${config.specPackages.light}/activate";
-  # };
-  # specialisation.light.configuration = {
-  #   stylix.base16Scheme = lib.mkForce "${pkgs.base16-schemes}/share/themes/solarized-light.yaml";
-  #   wayland.windowManager.sway.config.keybindings."Mod4+v" = lib.mkForce "exec ${config.home.activationPackage}/activate";
-  # };
+  specialisation.light.configuration = {
+    stylix.base16Scheme = lib.mkForce "${pkgs.base16-schemes}/share/themes/solarized-light.yaml";
+    stylix.fonts.sizes.terminal = 20;
+  };
 
   programs.swaylock.enable = true;
   services.swayidle = {
@@ -382,7 +385,7 @@ rec {
           "--locked XF86MonBrightnessUp" = ''exec brightnessctl set +5%'';
 
           # NOTE(vipa, 2023-07-22): First attempt at global theme switching, this might be fine, or more likely causes infinite recursion
-          # "${mod}+v" =
+          "${mod}+v" = "exec ${toggle-theme}";
           #   if config.specPackages ? light
           #   then "exec ${config.specPackages.light}/activate"
           #   else ''swaynag -t warning -m "Couldn't find the spec for light mode, not switching."'';
