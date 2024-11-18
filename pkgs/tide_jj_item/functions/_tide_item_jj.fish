@@ -1,5 +1,9 @@
 function _tide_item_jj
     if not jj log -r @ --no-graph --template '' 2>/dev/null 1>&2
+        # NOTE(vipa, 2024-11-18): Fall back to looking for a git repo,
+        # but *only* if there's no jj repo here. This means we use jj
+        # info for co-located repositories.
+        _tide_item_git
         return
     end
     # NOTE(vipa, 2023-04-24): We ignore the working copy in everything
