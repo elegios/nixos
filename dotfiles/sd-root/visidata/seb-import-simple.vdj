@@ -1,0 +1,23 @@
+#!/usr/bin/env -S vd -p
+{"sheet": "", "col": "", "row": "", "longname": "sheets-stack", "input": "", "keystrokes": "Shift+S", "comment": "open SheetsStack"}
+{"sheet": "sheets", "col": "", "row": 2, "longname": "open-row", "input": "", "keystrokes": "Enter", "comment": "open current row with sheet-specific dive"}
+{"sheet": "", "col": "", "row": "", "longname": "open-row", "input": "", "keystrokes": "Enter", "comment": "open current row with sheet-specific dive"}
+{"sheet": "", "col": "", "row": "", "longname": "select-rows", "input": "", "keystrokes": "gs", "comment": "select all rows"}
+{"sheet": "", "col": "", "row": "", "longname": "copy-selected", "input": "", "keystrokes": "gy", "comment": "yank (copy) selected rows to clipboard"}
+{"col": "", "row": "", "longname": "open-new", "input": "", "keystrokes": "Shift+A", "comment": "Open new empty sheet"}
+{"sheet": "unnamed", "col": "", "row": "", "longname": "paste-after", "input": "", "keystrokes": "p", "comment": "paste clipboard rows after current row"}
+{"sheet": "unnamed", "col": "", "row": "6", "longname": "rename-cols-row", "input": "", "keystrokes": "g^", "comment": "rename all unnamed visible columns to contents of selected rows (or current row)"}
+{"sheet": "unnamed", "col": "A", "row": "", "longname": "rename-col", "input": "Date1", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "unnamed", "col": "Valutadatum", "row": "", "longname": "rename-col", "input": "Date2", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "unnamed", "col": "Verifikationsnummer", "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "hide the current column"}
+{"sheet": "unnamed", "col": "Saldo", "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "hide the current column"}
+{"sheet": "unnamed", "col": "", "row": "7", "longname": "select-before", "input": "", "keystrokes": "zs", "comment": "select all rows from top to cursor"}
+{"sheet": "unnamed", "col": "", "row": "", "longname": "delete-selected", "input": "", "keystrokes": "gd", "comment": "delete selected rows"}
+{"sheet": "unnamed", "col": "Text", "row": "", "longname": "rename-col", "input": "Name", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "unnamed", "col": "Date1", "row": "", "longname": "type-date", "input": "", "keystrokes": "@", "comment": "set type of current column to date"}
+{"sheet": "unnamed", "col": "Date2", "row": "", "longname": "type-date", "input": "", "keystrokes": "@", "comment": "set type of current column to date"}
+{"sheet": "unnamed", "col": "Date2", "row": "", "longname": "addcol-expr", "input": "min(Date1, Date2)", "keystrokes": "=", "comment": "create new column from Python expression, with column names as variables"}
+{"sheet": "unnamed", "col": "min(Date1, Date2)", "row": "", "longname": "rename-col", "input": "Real Date", "keystrokes": "^", "comment": "rename current column"}
+{"sheet": "unnamed", "col": "Date2", "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "hide the current column"}
+{"sheet": "unnamed", "col": "Date1", "row": "", "longname": "hide-col", "input": "", "keystrokes": "-", "comment": "hide the current column"}
+{"sheet": "unnamed", "col": "Belopp", "row": "", "longname": "rename-col", "input": "Amount", "keystrokes": "^", "comment": "rename current column"}
