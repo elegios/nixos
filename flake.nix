@@ -10,12 +10,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    base16.url = "github:SenchoPens/base16.nix/b390e";
     stylix = {
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
-      inputs.base16.follows = "base16";
     };
     fish-gi = {
       url = "github:oh-my-fish/plugin-gi";

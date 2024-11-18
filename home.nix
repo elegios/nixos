@@ -101,7 +101,7 @@ rec {
     signal-desktop
     qalculate-qt
     libqalculate
-    (nerdfonts.override { fonts = ["UbuntuMono"]; })
+    nerd-fonts.ubuntu-mono
 
     # archives
     zip
@@ -299,7 +299,7 @@ rec {
     image = ./assets/wallpaper.png;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/solarized-dark.yaml";
     fonts.monospace = {
-      package = pkgs.nerdfonts.override { fonts = ["UbuntuMono"]; };
+      package = pkgs.nerd-fonts.ubuntu-mono;
       name = "Ubuntu Mono Nerd Font";
     };
     targets.kitty.enable = true;
@@ -662,7 +662,7 @@ rec {
 
   home.activation.configure-tide = lib.hm.dag.entryAfter ["writeBoundary"] ''
     ${pkgs.fish}/bin/fish -c "tide configure --auto --style=Lean --prompt_colors='True color' --show_time='24-hour format' --lean_prompt_height='Two lines' --prompt_connection=Disconnected --prompt_spacing=Sparse --icons='Few icons' --transient=No"
-    ${pkgs.fish}/bin/fish -c "set -U tide_left_prompt_items pwd git jj newline character"
+    ${pkgs.fish}/bin/fish -c "set -U tide_left_prompt_items pwd jj newline character"
     ${pkgs.fish}/bin/fish -c "set -U tide_right_prompt_items status cmd_duration context jobs node python rustc java php ruby go kubectl toolbox terraform aws nix_shell crystal time"
     ${pkgs.fish}/bin/fish -c "set -U tide_jj_truncation_length 40"
     ${pkgs.fish}/bin/fish -c "set -U tide_jj_icon"
@@ -695,20 +695,6 @@ rec {
         echo cd (string repeat -n (math (string length -- $argv[1]) - 1) ../)
       end
       abbr --add dotdot --regex '^\.\.+$' --function multicd
-
-      # Auto-complete revisions and bookmarks for `jj` commands
-      function __changes
-        jj log -r :: --no-graph -T 'change_id.shortest() ++ "\t" ++  description.first_line() ++ "\n"'
-      end
-      function __bookmarks
-        jj log -r 'bookmarks()' --no-graph -T 'bookmarks.map(|b| b.name() ++ "\t" ++ description.first_line() ++ "\n")'
-      end
-      complete -f -c jj -s r -l revision -r -d 'Revision' -ka '( __changes )'
-      complete -f -c jj -n '__fish_seen_subcommand_from show' -ka '(__changes)'
-      complete -f -c jj -n '__fish_seen_subcommand_from bookmark set' -ka '(__bookmarks)'
-      complete -f -c jj -n '__fish_seen_subcommand_from bookmark track' -ka '(__bookmarks)'
-      complete -f -c jj -n '__fish_seen_subcommand_from new' -ka '(__bookmarks; __changes)'
-      complete -f -c jj -n '__fish_seen_subcommand_from new' -s b -ka '(__bookmarks)'
     '';
     plugins = with pkgs.fishPlugins; [
       { name = "tide"; src = tide.src; }
