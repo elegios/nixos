@@ -625,6 +625,9 @@
 (use-package gdscript-mode
   :mode ("\\.gd\\'" . gdscript-mode))
 
+(use-package uiua-ts-mode
+  :mode "\\.ua\\'")
+
 (when (executable-find "direnv")
   (use-package envrc
     :config
