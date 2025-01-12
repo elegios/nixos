@@ -6,11 +6,11 @@ if test (count $argv) -gt 0
   cd $argv[1]
 end
 
-if which git >/dev/null 2>&1 && git ls-files --exclude-standard --other --cached 2>/dev/null
+if which jj >/dev/null 2>&1 && jj file list --no-pager 2>/dev/null
   exit 0
 end
 
-if which jj >/dev/null 2>&1 && jj file list --no-pager 2>/dev/null
+if which git >/dev/null 2>&1 && git ls-files --exclude-standard --other --cached 2>/dev/null
   exit 0
 end
 
