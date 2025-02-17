@@ -97,7 +97,7 @@ in
   users.users.vipa = {
     isNormalUser = true;
     description = "Viktor Palmkvist";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "dialout" ];
     packages = [];
   };
 
