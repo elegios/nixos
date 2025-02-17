@@ -434,16 +434,20 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
 ; TODO: ensure these (open line) interact nicely with selections
 (defun ele/open-line-below ()
   (interactive)
-  (end-of-line)
-  (newline)
-  (indent-for-tab-command))
+  (mc/execute-command-for-all-cursors 'end-of-line)
+  (mc/execute-command-for-all-cursors 'newline)
+  (mc/execute-command-for-all-cursors 'indent-for-tab-command))
+
+(defun ele/backward-line ()
+  (interactive)
+  (forward-line -1))
 
 (defun ele/open-line-above ()
   (interactive)
-  (beginning-of-line)
-  (newline)
-  (forward-line -1)
-  (indent-for-tab-command))
+  (mc/execute-command-for-all-cursors 'beginning-of-line)
+  (mc/execute-command-for-all-cursors 'newline)
+  (mc/execute-command-for-all-cursors 'ele/backward-line)
+  (mc/execute-command-for-all-cursors 'indent-for-tab-command))
 
 (defun ele/shell-command (command)
   (interactive (list (read-shell-command "Enter shell command: ")))
@@ -525,6 +529,12 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
             (setq answer (+ (expt 10 field-width) answer)))
           (replace-match (format (concat "%0" (int-to-string field-width) "d")
                                  answer)))))))
+
+(defun ele/isearch-forward-thing-at-point ()
+  (interactive)
+  (isearch-forward-thing-at-point)
+  (isearch-exit)
+  (isearch-lazy-highlight-new-loop))
 
 (defun ele/toggle-case ()
   "Toggle the case of the region if present, otherwise at point."

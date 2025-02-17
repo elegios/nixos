@@ -134,15 +134,6 @@
   (define-key company-active-map [return] nil)
   (global-company-mode))
 
-;; (use-package lsp-mode
-;;   :commands lsp
-;;   :bind ("C-c C-a" . lsp-execute-code-action))
-
-;; (use-package lsp-ui
-;;   :after lsp-mode
-;;   :custom
-;;   (lsp-ui-doc-enable nil))
-
 (use-package eldoc
   :diminish eldoc-mode
   :config
@@ -277,14 +268,23 @@
   :config
   (setq bm-highlight-style 'bm-highlight-only-fringe))
 
+(use-package deadgrep
+  :commands (deadgrep))
+
+(use-package wgrep
+  :commands (wgrep-change-to-wgrep-mode wgrep-setup-internal)
+  :config
+  ;; NOTE(vipa, 2025-03-31): C-c C-p to start, C-c C-e to finish, C-c C-k to abort
+  (setq wgrep-auto-save-buffer t))
+
+(use-package wgrep-deadgrep
+  :hook (deadgrep-finished . wgrep-deadgrep-setup))
+
+(use-package try
+  :commands (try))
+
 (use-package ele
   :ensure nil)
-
-(use-package sam
-  :commands (sam-eval-last-command)
-  :ensure nil
-  :config
-  (setq sam-emacs-style-regexps t))
 
 (use-package selected
   :demand t
@@ -300,9 +300,6 @@
         ("{" . ele/wrap-region-in-pair)
         ("\"" . ele/wrap-region-in-pair)))
 
-(use-package atomic-chrome
-  :commands (atomic-chrome-start-server))
-
 ; The setup here is for basic, available anywhere stuff
 (use-package ryo-modal
   :demand t
@@ -317,6 +314,8 @@
                  (ryo-modal-mode . ,ryo-modal-mode-map)))
   (add-hook 'prog-mode-hook 'ele/enter-command-mode)
   (add-hook 'text-mode-hook 'ele/enter-command-mode)
+  (add-hook 'grep-mode-hook 'ele/enter-command-mode)
+  (add-hook 'deadgrep-mode-hook 'ele/enter-command-mode)
   (add-hook 'ryo-modal-mode-hook
             (lambda ()
               (if ryo-modal-mode
@@ -340,35 +339,40 @@
       (with-current-buffer buffer
         ad-do-it)))
 
+  (setq isearch-repeat-on-direction-change t)
+  (setq isearch-wrap-pause 'no)
+
   ; TODO: ' for transpose selections
-  ; TODO: ~ for caps case
   ; TODO: indentation stuff is still wrong, it doesn't default correctly, and <> do not indent correctly
   ; TODO: maybe make the bookmark save all cursors and regions, instead of just the current point?
+  ; TODO: find a keybind for deadgrep, make a nicer keybind for wgrep switch-to-wgrep and finish editing
+  ; TODO: can I make 'q' follow the underlying command of temporary mode buffers, so it closes them?
   (ryo-modal-keys
     ; movement
-    ("j" next-line)
-    ("J" mc/mark-next-lines)
-    ("k" previous-line)
-    ("K" mc/mark-previous-lines)
+    ("j" next-line :mc-all t)
+    ("J" mc/mark-next-lines :mc-all t)
+    ("k" previous-line :mc-all t)
+    ("K" mc/mark-previous-lines :mc-all t)
 
-    ("b" ele/backward-word)
-    ("e" ele/forward-word)
-    ("h" backward-char)
-    ("l" forward-char)
+    ("b" ele/backward-word :mc-all t)
+    ("e" ele/forward-word :mc-all t)
+    ("h" backward-char :mc-all t)
+    ("l" forward-char :mc-all t)
 
     ("/" isearch-forward)
-    ("n" isearch-repeat-forward)
-    ("M-n" isearch-repeat-backward)
-    ("N" ele/mark-isearch-other-end)
+    ("*" ele/isearch-forward-thing-at-point)
+    ("n" isearch-repeat-forward :mc-all t)
+    ("M-n" isearch-repeat-backward :mc-all t)
+    ("N" ele/mark-isearch-other-end :mc-all t)
 
     ("g"
-     (("h" beginning-of-line)
-      ("l" end-of-line)
-      ("k" beginning-of-buffer)
-      ("g" beginning-of-buffer)
-      ("j" end-of-buffer)))
-    ("G" avy-goto-char-timer)
-    (":" ele/goto-line)
+     (("h" beginning-of-line :mc-all t)
+      ("l" end-of-line :mc-all t)
+      ("k" beginning-of-buffer :mc-all t)
+      ("g" beginning-of-buffer :mc-all t)
+      ("j" end-of-buffer :mc-all t)))
+    ("G" avy-goto-char-timer :mc-all 0)
+    (":" ele/goto-line :mc-all 0)
 
     ("v" :hydra
      '(hydra-visual
@@ -390,18 +394,18 @@
        ("q" nil "Cancel")))
 
     ; kill-ring
-    ("y" kill-ring-save)
-    ("d" ele/delete)
-    ("D" ele/delete-no-kill)
-    ("p" ele/yank)
+    ("y" kill-ring-save :mc-all t)
+    ("d" ele/delete :mc-all t)
+    ("D" ele/delete-no-kill :mc-all t)
+    ("p" ele/yank :mc-all t)
 
     ; selection
-    ("." er/expand-region)
-    ("x" ele/expand-line)
-    ("%" mark-whole-buffer)
-    ("m" ele/exchange-point-and-mark)
-    ("M" ele/activate-mark)
-    ("SPC" ele/keyboard-quit)
+    ("." er/expand-region :mc-all t)
+    ("x" ele/expand-line :mc-all t)
+    ("%" mark-whole-buffer :mc-all t)
+    ("m" ele/exchange-point-and-mark :mc-all t)
+    ("M" ele/activate-mark :mc-all t)
+    ("SPC" ele/keyboard-quit :mc-all 0)
     ("w" :hydra
      '(hydra-smartparens
        (:columns 4)
@@ -424,55 +428,54 @@
     ("<backtab>" delete-other-windows)
 
     ; parens and brackets and stuff
-    ("(" corral-parentheses-backward)
-    (")" corral-parentheses-forward)
-    ("[" corral-brackets-backward)
-    ("]" corral-brackets-forward)
-    ("{" corral-braces-backward)
-    ("}" corral-braces-forward)
+    ("(" corral-parentheses-backward :mc-all t)
+    (")" corral-parentheses-forward :mc-all t)
+    ("[" corral-brackets-backward :mc-all t)
+    ("]" corral-brackets-forward :mc-all t)
+    ("{" corral-braces-backward :mc-all t)
+    ("}" corral-braces-forward :mc-all t)
 
     ; macros
     ("Q" ele/define-or-end-macro)
     ("q" kmacro-call-macro)
 
     ; misc
-    (">" ele/indent)
-    ("<" ele/dedent)
-    ("M-j" ele/join-line)
-    ("u" undo)
+    (">" ele/indent :mc-all t)
+    ("<" ele/dedent :mc-all t)
+    ("M-j" ele/join-line :mc-all t)
+    ("u" undo :mc-all 0)
     ("|" ele/shell-command)
     ("t" ele/c-god)
     ("z" bm-next)
     ("Z" bm-toggle)
-    ("S" sam-eval-last-command)
-    ("C" ele/toggle-case)
+    ("C" ele/toggle-case :mc-all t)
 
     ; leader key
     (","
-     (("c" ele/comment)
+     (("c" ele/comment :mc-all t)
       ("t"
-       (("t" ele/insert-todo)
-        ("n" ele/insert-note)
-        ("o" ele/insert-opt)))
-      ("p" projectile-find-file)
-      ("b" switch-to-buffer)
-      ("f" find-file)
-      ("e" ele/edit-emacs-config)
-      ("," smex)
-      ("s" ele/save-all)
-      ("i" ele/increment-number-decimal)
-      ("SPC" ele/shell-and-update-output)
-      ("w" fill-paragraph)
-      ("q" save-buffers-kill-terminal)))
+       (("t" ele/insert-todo :mc-all 0)
+        ("n" ele/insert-note :mc-all 0)
+        ("o" ele/insert-opt :mc-all 0)))
+      ("p" projectile-find-file :mc-all 0)
+      ("b" switch-to-buffer :mc-all 0)
+      ("f" find-file :mc-all 0)
+      ("e" ele/edit-emacs-config :mc-all 0)
+      ("," smex :mc-all 0)
+      ("s" ele/save-all :mc-all 0)
+      ("i" ele/increment-number-decimal :mc-all t)
+      ("SPC" ele/shell-and-update-output :mc-all t)
+      ("w" fill-paragraph :mc-all t)
+      ("q" save-buffers-kill-terminal :mc-all 0)))
 
     ; insert mode
-    ("o" ele/open-line-below :then '(ele/exit-command-mode))
-    ("O" ele/open-line-above :then '(ele/exit-command-mode))
-    ("c" ele/change)
-    ("i" ele/insert)
-    ("a" ele/append)
-    ("A" end-of-line :then '(deactivate-mark ele/exit-command-mode))
-    ("I" beginning-of-line :then '(deactivate-mark ele/exit-command-mode)))
+    ("o" ele/open-line-below :then '(ele/exit-command-mode) :mc-all 0)
+    ("O" ele/open-line-above :then '(ele/exit-command-mode) :mc-all 0)
+    ("c" ele/change :mc-all 0)
+    ("i" ele/insert :mc-all 0)
+    ("a" ele/append :mc-all 0)
+    ("A" end-of-line :then '(deactivate-mark ele/exit-command-mode) :mc-all 0)
+    ("I" beginning-of-line :then '(deactivate-mark ele/exit-command-mode) :mc-all 0))
 
   ; Set up prefix arguments
   (ryo-modal-keys
@@ -627,6 +630,11 @@
 
 (use-package uiua-ts-mode
   :mode "\\.ua\\'")
+
+(use-package zig-ts-mode
+  :mode "\\.zig\\'")
+
+(use-package just-mode)
 
 (when (executable-find "direnv")
   (use-package envrc

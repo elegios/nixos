@@ -722,7 +722,7 @@ rec {
 
   programs.emacs = {
     enable = true;
-    package = (pkgs.emacsPackagesFor pkgs.emacs29-pgtk).emacsWithPackages
+    package = (pkgs.emacsPackagesFor pkgs.emacs-pgtk).emacsWithPackages
       (epkgs: builtins.attrValues {
         inherit (epkgs.treesit-grammars) with-all-grammars;
       } ++
