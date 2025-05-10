@@ -531,7 +531,7 @@ rec {
       .modules-right, .modules-center, .modules-left {
         background-color: @base01;
       }
-      #clock,#idle_inhibitor,#tray,#pulseaudio,#backlight,#network,#battery,#mode,#custom-idle {
+      #clock,#idle_inhibitor,#tray,#pulseaudio,#backlight,#network,#battery,#mode,#custom-idle,#memory {
         padding: 0 10px;
       }
       #workspaces button:first-child {
@@ -574,13 +574,19 @@ rec {
       #battery.critical:not(.charging) {
         color: @base09;
       }
+      #memory.warning {
+        color: @base0A;
+      }
+      #memory.critical {
+        color: @base09;
+      }
     '';
     settings.mainBar = {
       position = "top";
       spacing = 4;
       modules-left = ["sway/workspaces" "sway/mode" "sway/scratchpad"];
       modules-center = ["clock" "idle_inhibitor" "custom/idle"];
-      modules-right = ["tray" "pulseaudio" "backlight" "network" "battery"];
+      modules-right = ["tray" "pulseaudio" "backlight" "network" "memory" "battery"];
       "sway/workspaces".disable-scroll = true;
       "sway/mode".format = ''<span style="italic">{}</span>'';
       "sway/scratchpad" = {
@@ -638,6 +644,14 @@ rec {
         format-linked = "{ifname} (No IP) ";
         format-disconnected = "Disconnected ⚠";
         on-click = "kitty nmtui";
+      };
+      memory = {
+        interval = 30;
+        format = "{avail:0.1f}G ";
+        states = {
+          warning = 100 * 3.0 / 16.0;
+          critical = 100 * 1.0 / 16.0;
+        };
       };
       battery = {
         states = {
