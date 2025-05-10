@@ -97,7 +97,7 @@ in
   users.users.vipa = {
     isNormalUser = true;
     description = "Viktor Palmkvist";
-    extraGroups = [ "networkmanager" "wheel" "dialout" ];
+    extraGroups = [ "networkmanager" "wheel" "dialout" "podman" ];
     packages = [];
   };
 
@@ -150,6 +150,9 @@ in
     # gtk portal needed to make gtk apps happy
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
+
+  virtualisation.containers.enable = true;
+  virtualisation.podman.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
