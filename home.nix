@@ -263,12 +263,13 @@ rec {
       aliases = {
         ls = ["log" "--revisions" ''default() & and_parents((::@ ~ public())::)''];
         leaves = ["log" "--no-graph" "--revisions" ''leaves(all())''];
-        tug = ["bookmark" "move" "--from" "heads(::@- & bookmarks())" "--to" "@-"];
+        tug = ["bookmark" "move" "--from" "heads(::@- & bookmarks())" "--to" "heads(::@- ~ description(\"#no-push\"):: ~ empty())"];
       };
       revsets.log = "default()";
       templates.log = "myOneline";
       git.fetch = "origin";
       git.push = "fork";
+      git.private-commits = "description('#no-push')";
       ui.pager = "less -FRX";
       revset-aliases = {
         "public()" = "::origin_bookmarks()";
