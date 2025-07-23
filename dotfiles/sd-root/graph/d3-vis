@@ -115,6 +115,7 @@ let html = `
       linkStrokeOpacity = 0.6, // link stroke opacity
       linkStrokeWidth = 1.5, // given d in links, returns a stroke width in pixels
       linkStrokeLinecap = "round", // link stroke linecap
+      linkArrowLen = 5, // length of one "side-line" in an arrow
       linkStrength,
       colors = d3.schemeTableau10, // an array of color strings, for the node groups
       width = 640, // outer width, in pixels
@@ -248,6 +249,13 @@ let html = `
       function drawLink(d) {
         context.moveTo(d.source.x, d.source.y);
         context.lineTo(d.target.x, d.target.y);
+        const angle = Math.atan2(d.target.y-d.source.y, d.target.x-d.source.x);
+        const headX = d.target.x-Math.cos(angle)*nodeRadius;
+        const headY = d.target.y-Math.sin(angle)*nodeRadius;
+        context.moveTo(headX, headY);
+        context.lineTo(headX - linkArrowLen * Math.cos(angle - Math.PI/6), headY - linkArrowLen * Math.sin(angle - Math.PI/6));
+        context.moveTo(headX, headY);
+        context.lineTo(headX - linkArrowLen * Math.cos(angle + Math.PI/6), headY - linkArrowLen * Math.sin(angle + Math.PI/6));
       }
 
       function drawNode(d, shape) {
