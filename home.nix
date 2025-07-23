@@ -776,12 +776,6 @@ rec {
       id = 0;
       isDefault = true;
       name = "vipa";
-      # Remove the titlebar, since I use sidebery instead
-      userChrome = ''
-      #titlebar {
-        visibility: collapse !important;
-      }
-      '';
     };
   };
 
