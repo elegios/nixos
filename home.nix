@@ -647,11 +647,11 @@ rec {
         on-click = "kitty nmtui";
       };
       memory = {
-        interval = 30;
+        interval = 1;
         format = "{avail:0.1f}G ";
         states = {
-          warning = 100 * 3.0 / 16.0;
-          critical = 100 * 1.0 / 16.0;
+          warning = 70;
+          critical = 85;
         };
       };
       battery = {
