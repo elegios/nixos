@@ -7,6 +7,12 @@
 
   boot.kernelParams = [ "i915.force_probe=7d55" ];
 
+  # TODO(vipa, 2025-07-23): In theory this should be correct, but it
+  # seems like there's no support for what I actually have, and some
+  # service it starts fails, so I'm turning it off for the moment
+  # https://github.com/NixOS/nixpkgs/issues/225743 for reference
+  # hardware.ipu6 = { enable = true; platform = "ipu6epmtl"; };
+
   powerManagement.cpuFreqGovernor = "ondemand";
 
   # NOTE(vipa, 2024-11-18): The built-in monitor has a weird
