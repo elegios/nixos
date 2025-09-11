@@ -11,9 +11,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
-      url = "github:danth/stylix";
+      url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
     };
     fish-gi = {
       url = "github:oh-my-fish/plugin-gi";
@@ -30,11 +29,12 @@
   };
   outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, ... }@inputs:
     let hm = {
-          stylix.homeManagerIntegration.followSystem = false;
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
 
-          home-manager.users.vipa = import ./home.nix;
+          home-manager.users.vipa = {
+            imports = [ ./home.nix stylix.homeModules.stylix ];
+          };
 
           home-manager.extraSpecialArgs = with inputs; { inherit fish-gi miking-emacs typst-ts-mode; };
         };
@@ -46,7 +46,6 @@
             modules = [
               ./modules/common-configuration.nix
               ./hosts/vipa-nixos/default.nix
-              stylix.nixosModules.stylix
               nixos-hardware.nixosModules.dell-xps-13-9380
               home-manager.nixosModules.home-manager
               hm
@@ -55,10 +54,13 @@
           "viktpalm-linux" = nixpkgs.lib.nixosSystem rec {
             system = "x86_64-linux";
             modules = [
+              nixos-hardware.nixosModules.common-cpu-intel
+              nixos-hardware.nixosModules.common-pc-laptop
+              nixos-hardware.nixosModules.common-pc-ssd
+              {services = {fwupd.enable = nixpkgs.lib.mkDefault true; thermald.enable = nixpkgs.lib.mkDefault true;};}
+
               ./modules/common-configuration.nix
               ./hosts/viktpalm-linux/default.nix
-              stylix.nixosModules.stylix
-              nixos-hardware.nixosModules.dell-xps-13-9343
               home-manager.nixosModules.home-manager
               hm
             ];

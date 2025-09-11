@@ -42,6 +42,19 @@ let
     '';
   };
 
+  # NOTE(vipa, 2025-09-11): From https://github.com/NixOS/nixpkgs/pull/438582/files, probably remove later
+  ulauncher-with-patched-webkit-gtk = (pkgs.ulauncher
+    .override {webkitgtk_4_0 = pkgs.webkitgtk_4_1;})
+    .overrideAttrs {
+      patches = pkgs.ulauncher.patches ++ [
+        (pkgs.fetchpatch {
+          name = "support-gir1.2-webkit2-4.1.patch";
+          url = "https://src.fedoraproject.org/rpms/ulauncher/raw/rawhide/f/support-gir1.2-webkit2-4.1.patch";
+          hash = "sha256-w1c+Yf6SA3fyMrMn1LXzCXf5yuynRYpofkkUqZUKLS8=";
+        })
+      ];
+    };
+
 
 in
 {
@@ -72,7 +85,7 @@ in
     git
     wget
     curl
-    ulauncher
+    ulauncher-with-patched-webkit-gtk
     fish
     dbus-sway-environment
     waybar
@@ -121,10 +134,10 @@ in
 
   services.fwupd.enable = true;
 
-  services.logind.extraConfig = ''
-    HandlePowerKey=suspend
-    HandleLidSwitchDocked=suspend
-  '';
+  services.logind.settings.Login = {
+    HandlePowerKey = "suspend";
+    HandleLidSwitchDocked = "suspend";
+  };
 
   services.nixseparatedebuginfod.enable = true;
 
@@ -156,7 +169,6 @@ in
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
 
   # enable sway window manager
   programs.sway = {

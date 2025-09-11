@@ -315,6 +315,7 @@ rec {
 
   stylix = {
     enable = true;
+    polarity = "dark";
     autoEnable = false;
     image = ./assets/wallpaper.png;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/solarized-dark.yaml";
