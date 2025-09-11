@@ -255,31 +255,61 @@ rec {
     settings = {
       user.name = "Viktor Palmkvist";
       user.email = "vipa@kth.se";
+      ui = {
+        diff-formatter = "difftastic";
+        pager = "less -FRX";
+        default-command = "log-stack";
+      };
       merge-tools.difftastic = {
         program = "${pkgs.difftastic}/bin/difft";
         diff-args = ["--color=always" "$left" "$right"];
+        diff-invocation-mode = "file-by-file";
       };
-      ui.diff.tool = "difftastic";
+      git = {
+        fetch = "origin";
+        push = "fork";
+        private-commits = "private()";
+      };
       aliases = {
-        ls = ["log" "--revisions" ''default() & and_parents((::@ ~ public())::)''];
+        # Log only the current stack
+        log-stack = ["log" "--revisions" "stack()"];
+        # Show all leaves in the repository, without a graph
         leaves = ["log" "--no-graph" "--revisions" ''leaves(all())''];
-        tug = ["bookmark" "move" "--from" "heads(::@- & bookmarks())" "--to" "heads(::@- ~ description(\"#no-push\"):: ~ empty())"];
+        # Move closest bookmark(s) to the most recent non-private revision
+        tug = ["bookmark" "move" "--from" "leaves(::@- & bookmarks())" "--to" "leaves(::@- ~ private():: ~ empty())"];
+        # Move something on top of trunk
+        retrunk = ["rebase" "-d" "trunk()"];
+        # Move the current stack to trunk
+        reheat = ["rebase" "-d" "trunk()" "-s" "roots(trunk()..stack(@))"];
       };
-      revsets.log = "default()";
-      templates.log = "myOneline";
-      git.fetch = "origin";
-      git.push = "fork";
-      git.private-commits = "description('#no-push')";
-      ui.pager = "less -FRX";
+      revsets = {
+        log = "stack(mine() | @) | trunk() | @";
+        log-graph-prioritize = "coalesce(megamerge(), trunk())";
+      };
       revset-aliases = {
-        "public()" = "::origin_bookmarks()";
-        "and_parents(x)" = ''x | x-'';
-        "leaves(x)" = ''heads(x)'';
-        "default()" = ''and_parents(@ | (origin_bookmarks()..)) | heads(origin_bookmarks())'';
-        "origin_bookmarks()" = ''remote_bookmarks(remote=exact:"origin")'';
+        "user(x)" = "author(x) | committer(x)";
+
+        "stack()" = "stack(@)";
+        "stack(x)" = "stack(x, 2)";
+        "stack(x, n)" = "ancestors(reachable(x, mutable()), n)";
+
+        "mine()" = "user('vipa@kth.se')";
+
+        "private()" = "description('#no-push')";
+
+        "megamerge()" = "coalesce(present(megamerge), stack() & merges())";
+
+        # leaves is a more natural name for me
+        "leaves(x)" = "heads(x)";
+
+        # TODO(vipa, 2025-09-11): Old, keep or remove?
+        # "default()" = ''and_parents(@ | (origin_bookmarks()..)) | heads(origin_bookmarks())'';
+        # "origin_bookmarks()" = ''remote_bookmarks(remote=exact:"origin")'';
       };
+      templates.log = "myOneline";
       template-aliases = {
         "format_short_id(id)" = ''id.shortest(4)'';
+
         "format_timestamp(timestamp)" = ''
           timestamp.ago().remove_suffix(" ago").remove_suffix("s").remove_suffix(" second").remove_suffix(" minute").remove_suffix(" hour").remove_suffix(" day").remove_suffix(" week").remove_suffix(" month").remove_suffix(" year")
           ++ label("timestamp",
