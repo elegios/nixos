@@ -214,7 +214,11 @@
   (sp-backward-slurp-sexp sp-backward-barf-sexp sp-forward-barf-sexp
    sp-forward-slurp-sexp sp-rewrap-sexp sp-splice-sexp sp-raise-sexp
    sp-split-sexp sp-join-sexp)
-  :diminish smartparens-mode)
+  :diminish smartparens-mode
+  :config
+  (defadvice sp--indent-region (around ele/sp--indent-region activate)
+    (unless (eq major-mode 'mcore-mode)
+        ad-do-it)))
 
 (use-package projectile
   :commands (projectile-find-file)
