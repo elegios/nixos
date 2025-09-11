@@ -4,19 +4,24 @@
 
 if test (count $argv) -gt 0
   cd $argv[1]
+  set -g sedArg 's#^#'$argv[1]'/#'
+else
+  set -g sedArg ''
 end
 
-if which jj >/dev/null 2>&1 && jj file list --no-pager 2>/dev/null
-  exit 0
-end
+begin
+  if which jj &>/dev/null && jj file list --no-pager 2>/dev/null
+    exit 0
+  end
 
-if which git >/dev/null 2>&1 && git ls-files --exclude-standard --other --cached 2>/dev/null
-  exit 0
-end
+  if which git &>/dev/null && git ls-files --exclude-standard --other --cached (git rev-parse --show-toplevel) 2>/dev/null
+    exit 0
+  end
 
-if which sl >/dev/null 2>&1 && sl files 2>/dev/null
-  exit 0
-end
+  if which sl &>/dev/null && sl files 2>/dev/null
+    exit 0
+  end
+end | sed $sedArg
 
 echo "Not in a known kind of repository" >&2
 exit 1
