@@ -122,7 +122,6 @@ let html = `
       height = 400, // outer height, in pixels
       invalidation // when this promise resolves, stop the simulation,
     } = {}) {
-      debugger;
       // Compute values.
       const N = d3.map(nodes, nodeId).map(intern);
       const X = d3.map(nodes, initialX).map(intern);
