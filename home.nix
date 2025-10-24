@@ -412,6 +412,8 @@ rec {
         };
         input."type:touchpad".natural_scroll = "enabled";
         input."type:pointer".pointer_accel = "-0.7";
+        input."type:tablet_tool".map_to_output = "DP-1";
+        input."1386:209:Wacom_Bamboo_2FG_4x5_Finger".events = "disabled";
         floating.modifier = mod;
         keybindings = {
           # External programs
