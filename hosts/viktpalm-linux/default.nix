@@ -21,6 +21,10 @@
   # scaling isn't great, it seems to render well enough for the
   # moment.
   home-manager.users.vipa.wayland.windowManager.sway.config.output."eDP-1".scale = "1.5";
+  # NOTE(vipa, 2025-09-23): this particular monitor is large, I don't
+  # want things to be quite that small, and 1.5 seems to work well
+  # enough for the other monitor, so I'll keep going with it here.
+  home-manager.users.vipa.wayland.windowManager.sway.config.output."Lenovo Group Limited LEN T27p-10 0x32424C4B".scale = "1.5";
 
   # services.printing.enable = true;
   # hardware.pulseaudio.enable = false;
