@@ -1,0 +1,9 @@
+#!/usr/bin/env fish
+
+# Select an area, OCR it, put the text in file (if argument given) or clipboard
+
+if set -q argv[1]
+    grim -g (slurp) - | tesseract - $argv[1]
+else
+    grim -g (slurp) - | tesseract - - | wl-copy
+end

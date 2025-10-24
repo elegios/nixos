@@ -100,7 +100,7 @@ rec {
     # profile directory inside Dropbox. Ideally this would be set-up
     # automatically
     thunderbird
-    morgen
+    # morgen
     sway-switch-workspace
     sway-toggle-semi-fullscreen
     maestral-gui
@@ -131,6 +131,8 @@ rec {
     libnotify
     nodejs_20
     (callPackage ./pkgs/edir {})
+    tesseract
+    wl-mirror
 
     # networking tools
     dnsutils  # `dig` + `nslookup`

@@ -1,0 +1,5 @@
+#!/usr/bin/env fish
+
+# Select a screen, then create a window that mirrors that screen
+
+wl-mirror -r (slurp -o)

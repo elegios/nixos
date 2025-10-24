@@ -1,0 +1,9 @@
+#!/usr/bin/env fish
+
+# Select screen area, screenshot, put in file (if argument given) or clipboard
+
+if set -q argv[1]
+    grim -g (slurp) $argv[1]
+else
+    grim -g (slurp) -t png - | wl-copy -t image/png
+end
