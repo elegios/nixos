@@ -274,7 +274,7 @@ rec {
       };
       aliases = {
         # Log only the current stack
-        log-stack = ["log" "--revisions" "stack()"];
+        log-stack = ["log" "--revisions" "stack()" "--template" "myOneline ++ diffStatIfCurrent"];
         # Show all leaves in the repository, without a graph
         leaves = ["log" "--no-graph" "--revisions" ''leaves(all())''];
         # Move closest bookmark(s) to the most recent non-private revision
@@ -340,6 +340,9 @@ rec {
             )
             ++ "\n"
           )
+        '';
+        diffStatIfCurrent = ''
+          if(current_working_copy,diff.stat() ++ "\n")
         '';
       };
     };
