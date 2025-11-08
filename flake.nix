@@ -60,6 +60,7 @@
               {services = {fwupd.enable = nixpkgs.lib.mkDefault true; thermald.enable = nixpkgs.lib.mkDefault true;};}
 
               ./modules/common-configuration.nix
+              ./modules/cachix.nix  # NOTE(vipa, 2025-11-08): Can be updated with cachix use <whatever> -m nixos -d ./modules
               ./hosts/viktpalm-linux/default.nix
               home-manager.nixosModules.home-manager
               hm
