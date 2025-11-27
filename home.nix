@@ -229,22 +229,26 @@ rec {
   };
   programs.git = {
     enable = true;
-    userName = "Viktor Palmkvist";
-    userEmail = "vipa@kth.se";
-    ignores = [ ".tup" "*~" ".direnv" ];
-    aliases = {
-      st = "status -s";
-      co = "checkout";
-      cob = "checkout -b";
-      lsb = "branch -vv";
-      ls = ''log --date=format:"%d/%m" --pretty=format:"%C(yellow)%h\\ %C(green)%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate'';
-    };
-    extraConfig = {
+    settings = {
       core.whitespace = "trailing-space,space-before-tab";
       interactive.singlekey = true;
       pull.ff = "only";
+      alias = {
+        st = "status -s";
+        co = "checkout";
+        cob = "checkout -b";
+        lsb = "branch -vv";
+        ls = ''log --date=format:"%d/%m" --pretty=format:"%C(yellow)%h\\ %C(green)%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate'';
+      };
+      user.name = "Viktor Palmkvist";
+      user.email = "vipa@kth.se";
     };
-    difftastic.enable = true;
+    ignores = [ ".tup" "*~" ".direnv" ];
+  };
+
+  programs.difftastic = {
+    enable = true;
+    git.enable = true;
   };
 
   programs.jujutsu = {
@@ -303,10 +307,6 @@ rec {
 
         # leaves is a more natural name for me
         "leaves(x)" = "heads(x)";
-
-        # TODO(vipa, 2025-09-11): Old, keep or remove?
-        # "default()" = ''and_parents(@ | (origin_bookmarks()..)) | heads(origin_bookmarks())'';
-        # "origin_bookmarks()" = ''remote_bookmarks(remote=exact:"origin")'';
       };
       templates.log = "myOneline";
       template-aliases = {
