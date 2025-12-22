@@ -41,12 +41,12 @@ function processInput(input) {
     } else if (typeof input !== 'object') {
         registerNode(input);
     } else {
-        let id = input.id || input.source || input.from;
+        let id = input.id ?? input.source ?? input.from;
         let label = input.label;
-        let kind = input.kind || input.type;
+        let kind = input.kind ?? input.type;
         let shape = input.shape;
         registerNode(id, label, kind, shape);
-        let target = input.target || input.to;
+        let target = input.target ?? input.to;
         if (Array.isArray(target)) {
             target.forEach(t => registerLink(id, t));
         } else if (target !== null && target !== undefined) {
@@ -97,7 +97,7 @@ let html = `
       links // an iterable of link objects (typically [{source, target}, …])
     }, {
       nodeId = d => d.id, // given d in nodes, returns a unique identifier (string)
-      label = d => d.label || d.id,
+      label = d => d.label ?? d.id,
       initialX = d => d.initialX,
       initialY = d => d.initialY,
       nodeGroup, // given d in nodes, returns an (ordinal) value for color
@@ -313,8 +313,8 @@ let html = `
       let nextColorId = 1;
       let colorIds = {};
       ForceGraph(graph, {
-        nodeGroup: n => n.kind || 0,
-        nodeShape: n => n.shape || 0,
+        nodeGroup: n => n.kind ?? 0,
+        nodeShape: n => n.shape ?? 0,
       });
     });
   </script>
