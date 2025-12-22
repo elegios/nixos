@@ -66,6 +66,16 @@
               hm
             ];
           };
+          "vipa-homeserver" = nixpkgs.lib.nixosSystem rec {
+            system = "x86_64-linux";
+            modules = [
+              ./modules/common-configuration.nix
+              ./modules/cachix.nix
+              ./hosts/vipa-homeserver/default.nix
+              home-manager.nixosModules.home-manager
+              hm
+            ];
+          };
         };
       };
 }
