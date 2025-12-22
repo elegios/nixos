@@ -276,6 +276,8 @@ rec {
         push = "fork";
         private-commits = "private()";
       };
+      remotes.fork.auto-track-bookmarks = "glob:*";
+      remotes.origin.auto-track-bookmarks = "regex:main|master|trunk";
       aliases = {
         # Log only the current stack
         log-stack = ["log" "--revisions" "stack()" "--template" "myOneline ++ diffStatIfCurrent"];
@@ -284,9 +286,9 @@ rec {
         # Move closest bookmark(s) to the most recent non-private revision
         tug = ["bookmark" "move" "--from" "leaves(::@- & bookmarks())" "--to" "leaves(::@- ~ private():: ~ empty())"];
         # Move something on top of trunk
-        retrunk = ["rebase" "-d" "trunk()"];
+        retrunk = ["rebase" "--onto" "trunk()"];
         # Move the current stack to trunk
-        reheat = ["rebase" "-d" "trunk()" "-s" "roots(trunk()..stack(@))"];
+        reheat = ["rebase" "--onto" "trunk()" "-s" "roots(trunk()..stack(@))"];
       };
       revsets = {
         log = "stack(mine() | @) | trunk() | @";
@@ -299,9 +301,9 @@ rec {
         "stack(x)" = "stack(x, 2)";
         "stack(x, n)" = "ancestors(reachable(x, mutable()), n)";
 
-        "mine()" = "user('vipa@kth.se')";
+        "mine()" = "user(exact:'vipa@kth.se')";
 
-        "private()" = "description('#no-push')";
+        "private()" = "description(substring:'#no-push')";
 
         "megamerge()" = "coalesce(present(megamerge), stack() & merges())";
 
@@ -382,11 +384,11 @@ rec {
   programs.swaylock.enable = true;
   services.swayidle = {
     enable = true;
-    events = [
-      { event = "before-sleep"; command = "${set-idle}; ${pkgs.swaylock}/bin/swaylock -f"; }
-      { event = "after-resume"; command = "${unset-idle}"; }
-      { event = "lock"; command = "${pkgs.swaylock}/bin/swaylock -f"; }
-    ];
+    events = {
+      "before-sleep" ="${set-idle}; ${pkgs.swaylock}/bin/swaylock -f";
+      "after-resume" = "${unset-idle}";
+      "lock" = "${pkgs.swaylock}/bin/swaylock -f";
+    };
     timeouts = [
       { timeout = 60 * 5; command = "${set-idle}"; resumeCommand = "${unset-idle}"; }
       { timeout = 60 * 15; command = "${pkgs.swaylock}/bin/swaylock -f"; }
