@@ -5,6 +5,11 @@
 
   networking.hostName = "viktpalm-linux"; # Define your hostname.
 
+  # Bootloader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.systemd-boot.configurationLimit = 20;
+
   boot.kernelParams = [ "i915.force_probe=7d55" ];
 
   # TODO(vipa, 2025-07-23): In theory this should be correct, but it
