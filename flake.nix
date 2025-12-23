@@ -70,6 +70,7 @@
             system = "x86_64-linux";
             modules = [
               ./modules/sshd.nix
+              ./modules/homeserver.nix
               ./modules/common-configuration.nix
               ./modules/cachix.nix
               ./hosts/vipa-homeserver/default.nix
