@@ -47,4 +47,20 @@ in
     enable = true;
     ports = [ 8083 ];
   };
+
+  services.restic.backups.gdrive = {
+    repository = "rclone:gdrive:/backups";
+    passwordFile = "/home/vipa/.restic-password";
+    pruneOpts = [
+      "--keep-within-daily 7d"   # NOTE(vipa, 2025-12-23): Daily backups for the last week
+      "--keep-within-weekly 1m"  # NOTE(vipa, 2025-12-23): Weekly backups for the last month
+      "--keep-within-monthly 1y" # NOTE(vipa, 2025-12-23): Monthly backups for the last year
+      "--keep-within-yearly 75y" # NOTE(vipa, 2025-12-23): Yearly backups for 75 years
+    ];
+    paths = [
+      "/var/lib/paperless"
+      "/var/lib/komga"
+      "/var/lib/boxes-app"
+    ];
+  };
 }
