@@ -1,6 +1,15 @@
 { config, pkgs, lib, ... }:
 
 {
+  services.paperless = {
+    enable = true;
+    address = "192.168.1.20";
+    port = 8080;
+    settings.PAPERLESS_OCR_LANGUAGE = "eng+swe";
+  };
+  networking.firewall.allowedTCPPorts = [ 8080 ];
+  networking.firewall.allowedUDPPorts = [ 8080 ];
+
   services.pihole-ftl = {
     enable = true;
     openFirewallDNS = true;
