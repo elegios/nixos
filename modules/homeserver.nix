@@ -1,6 +1,17 @@
 { config, pkgs, lib, ... }:
 
+let
+  boxes-app = builtins.fetchGit {
+    url = "https://github.com/elegios/boxes-app.git";
+    rev = "b0e9ce377c010df5b93988f70bdb9b2e3bbb2dda";
+  };
+in
+
 {
+  imports = [
+    "${boxes-app}/module.nix"
+  ];
+
   services.paperless = {
     enable = true;
     address = "192.168.1.20";
@@ -13,6 +24,12 @@
   services.komga = {
     enable = true;
     settings.server.port = 8081;
+    openFirewall = true;
+  };
+
+  services.boxes-app = {
+    enable = true;
+    settings.port = 8082;
     openFirewall = true;
   };
 
