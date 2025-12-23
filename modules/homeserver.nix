@@ -10,6 +10,12 @@
   networking.firewall.allowedTCPPorts = [ 8080 ];
   networking.firewall.allowedUDPPorts = [ 8080 ];
 
+  services.komga = {
+    enable = true;
+    settings.server.port = 8081;
+    openFirewall = true;
+  };
+
   services.pihole-ftl = {
     enable = true;
     openFirewallDNS = true;
