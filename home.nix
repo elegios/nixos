@@ -175,6 +175,15 @@ rec {
     usbutils # lsusb
   ];
 
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplicationPackages = [pkgs.firefox];
+    # TODO(vipa, 2026-01-01): This was removed from a locally generated file, might be desirable to re-add?
+    # [Default Applications]
+    # x-scheme-handler/sgnl=signal.desktop
+    # x-scheme-handler/signalcaptcha=signal.desktop
+  };
+
   home.activation.copy-calibre-plugins = lib.hm.dag.entryAfter ["writeBoundary"] ''
     for f in {${pkgs.callPackage ./pkgs/calibre-dedrm {}},${pkgs.callPackage ./pkgs/calibre-acsm {}}}/*.zip; do
       ${pkgs.calibre}/bin/calibre-customize --add-plugin="$f"
