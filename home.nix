@@ -372,6 +372,7 @@ rec {
     targets.gtk.enable = true;
     targets.swaylock.enable = true;
     targets.zathura.enable = true;
+    targets.gnome.enable = true;
   };
 
   programs.zathura.enable = true;
