@@ -78,6 +78,16 @@
               hm
             ];
           };
+          "vipa-thinkpad" = nixpkgs.lib.nixosSystem rec {
+            system = "x86_64-linux";
+            modules = [
+              ./modules/common-configuration.nix
+              ./modules/cachix.nix
+              ./hosts/vipa-thinkpad/default.nix
+              home-manager.nixosModules.home-manager
+              hm
+            ];
+          };
         };
       };
 }
