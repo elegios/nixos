@@ -426,8 +426,7 @@ rec {
         terminal = "kitty";
         startup = [
           { command = "waybar"; }
-          { command = "mkdir -p ~/logs"; }
-          { command = "ulauncher --hide-window > ~/logs/ulauncher.log 2>&1"; }
+          { command = "mkdir -p ~/logs && ulauncher --hide-window > ~/logs/ulauncher.log 2>&1"; }
           { command = "${unset-idle}"; }
         ];
         input."type:keyboard" = {
@@ -749,7 +748,7 @@ rec {
   };
 
   home.activation.configure-tide = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    ${pkgs.fish}/bin/fish -c "set -lpx ${pkgs.fishPlugins.tide.src}/functions; tide configure --auto --style=Lean --prompt_colors='True color' --show_time='24-hour format' --lean_prompt_height='Two lines' --prompt_connection=Disconnected --prompt_spacing=Sparse --icons='Few icons' --transient=No"
+    ${pkgs.fish}/bin/fish -c "set -lpx fish_function_path ${pkgs.fishPlugins.tide.src}/functions; tide configure --auto --style=Lean --prompt_colors='True color' --show_time='24-hour format' --lean_prompt_height='Two lines' --prompt_connection=Disconnected --prompt_spacing=Sparse --icons='Few icons' --transient=No"
     ${pkgs.fish}/bin/fish -c "set -U tide_left_prompt_items pwd jj newline character"
     ${pkgs.fish}/bin/fish -c "set -U tide_right_prompt_items status cmd_duration context jobs node python rustc java php ruby go kubectl toolbox terraform aws nix_shell crystal time"
     ${pkgs.fish}/bin/fish -c "set -U tide_jj_truncation_length 40"
