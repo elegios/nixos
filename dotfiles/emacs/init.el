@@ -538,13 +538,14 @@
     (add-hook 'elm-mode-hook 'elm-format-on-save-mode)))
 
 (use-package rust-mode
-  :mode ("\\.rs\\'" . rust-ts-mode))
-;; (use-package rustic
-;;   :mode ("\\.rs\\'" . rustic-mode)
-;;   :config
-;;   (setq rustic-lsp-client 'eglot)
-;;   (setq rustic-use-rust-save-some-buffers t)
-;;   (setq rustic-format-trigger 'on-save))
+  :mode ("\\.rs\\'" . rust-ts-mode)
+  :config
+  ;; TODO(vipa, 2025-12-30): This will complain that we have two
+  ;; entries that match rust-ts-mode and rust-mode, should replace the
+  ;; old one or merge the initializationOptions into it somehow
+  (add-to-list 'eglot-server-programs
+               '((rust-ts-mode rust-mode) .
+                 ("rust-analyzer" :initializationOptions (:inlayHints (:typeHints (:enable :json-false)))))))
 (use-package flycheck-rust
   :after rust-mode
   :hook (flycheck-mode . flycheck-rust-setup))
