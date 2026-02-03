@@ -111,6 +111,7 @@ rec {
     nerd-fonts.ubuntu-mono
     anki
     calibre
+    uhk-agent
 
     # archives
     zip

@@ -92,7 +92,7 @@ in
   users.users.vipa = {
     isNormalUser = true;
     description = "Viktor Palmkvist";
-    extraGroups = [ "networkmanager" "wheel" "dialout" "podman" ];
+    extraGroups = [ "networkmanager" "wheel" "dialout" "podman" "input" ];
     packages = [];
   };
 
@@ -131,6 +131,8 @@ in
 
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
+
+  hardware.keyboard.uhk.enable = true;
 
   # xdg-desktop-portal works by exposing a series of D-Bus interfaces
   # known as portals under a well-known name
