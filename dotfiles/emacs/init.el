@@ -354,9 +354,9 @@
   (ryo-modal-keys
     ; movement
     ("j" next-line :mc-all t)
-    ("J" mc/mark-next-lines :mc-all t)
+    ("J" mc/mark-next-lines :mc-all 0)
     ("k" previous-line :mc-all t)
-    ("K" mc/mark-previous-lines :mc-all t)
+    ("K" mc/mark-previous-lines :mc-all 0)
 
     ("b" ele/backward-word :mc-all t)
     ("e" ele/forward-word :mc-all t)
