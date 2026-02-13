@@ -112,6 +112,7 @@ rec {
     anki
     calibre
     uhk-agent
+    inkscape
 
     # archives
     zip
