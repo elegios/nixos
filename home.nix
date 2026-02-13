@@ -113,6 +113,7 @@ rec {
     calibre
     uhk-agent
     inkscape
+    vesktop
 
     # archives
     zip
