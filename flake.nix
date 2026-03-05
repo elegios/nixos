@@ -72,7 +72,6 @@
               ./modules/sshd.nix
               ./modules/homeserver.nix
               ./modules/common-configuration.nix
-              ./modules/tailscale.nix
               ./modules/cachix.nix
               ./hosts/vipa-homeserver/default.nix
               home-manager.nixosModules.home-manager

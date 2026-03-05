@@ -12,25 +12,37 @@ in
     "${boxes-app}/module.nix"
   ];
 
+  services.tailscale.enable = true;
+  services.tailscale.serve.enable = true;
+
   services.paperless = {
     enable = true;
-    address = "192.168.1.20";
+    address = "::";
     port = 8080;
     settings.PAPERLESS_OCR_LANGUAGE = "eng+swe";
   };
   networking.firewall.allowedTCPPorts = [ 8080 ];
   networking.firewall.allowedUDPPorts = [ 8080 ];
+  services.tailscale.serve.services.paperless.endpoints = {
+    "tcp:80" = "http://localhost:8080";
+  };
 
   services.komga = {
     enable = true;
     settings.server.port = 8081;
     openFirewall = true;
   };
+  services.tailscale.serve.services.komga.endpoints = {
+    "tcp:80" = "http://localhost:8081";
+  };
 
   services.boxes-app = {
     enable = true;
     settings.port = 8082;
     openFirewall = true;
+  };
+  services.tailscale.serve.services.boxes.endpoints = {
+    "tcp:80" = "http://localhost:8082";
   };
 
   services.pihole-ftl = {
