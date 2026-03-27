@@ -71,33 +71,6 @@ let
       hash = "sha256-YlojwH2ITbq2l/7bOSF6qsMhkgqe6Xm7p3P/ZgiLSCU=";
     })];
   });
-  # TODO(vipa, 2026-02-27): Replace with normal calibre when https://github.com/nixos/nixpkgs/pull/493988 has landed, can be checked via https://nixpkgs-tracker.ocfox.me/?pr=493988
-  calibre-build-fix = pkgs.calibre.overrideAttrs (old: {
-    installPhase = ''
-      runHook preInstall
-
-      export QMAKE="${pkgs.qt6.qtbase}/bin/qmake"
-
-      python setup.py install --root=$out \
-        --prefix=$out \
-        --libdir=$out/lib \
-        --staging-root=$out \
-        --staging-libdir=$out/lib \
-        --staging-sharedir=$out/share
-
-      PYFILES="$out/bin/* $out/lib/calibre/calibre/web/feeds/*.py
-        $out/lib/calibre/calibre/ebooks/metadata/*.py
-        $out/lib/calibre/calibre/ebooks/rtf2xml/*.py"
-
-      sed -i "s/env python[0-9.]*/python/" $PYFILES
-      sed -i "2i import sys; sys.argv[0] = 'calibre'" $out/bin/calibre
-
-      mkdir -p $out/share
-      cp -a man-pages $out/share/man
-
-      runHook postInstall
-   '';
-  });
   toggle-theme = pkgs.writeShellScript "toggle-theme" ''
     if [ -d "$(${pkgs.home-manager}/bin/home-manager generations | head -1 | rg -o '/[^ ]*')"/specialisation ]; then
       "$(${pkgs.home-manager}/bin/home-manager generations | head -1 | rg -o '/[^ ]*')"/specialisation/light/activate
@@ -137,7 +110,7 @@ rec {
     libqalculate
     nerd-fonts.ubuntu-mono
     # anki
-    calibre-build-fix
+    calibre
     uhk-agent
     inkscape
     vesktop
@@ -216,7 +189,7 @@ rec {
 
   home.activation.copy-calibre-plugins = lib.hm.dag.entryAfter ["writeBoundary"] ''
     for f in {${pkgs.callPackage ./pkgs/calibre-dedrm {}},${pkgs.callPackage ./pkgs/calibre-acsm {}}}/*.zip; do
-      ${calibre-build-fix}/bin/calibre-customize --add-plugin="$f"
+      ${pkgs.calibre}/bin/calibre-customize --add-plugin="$f"
     done
   '';
 
