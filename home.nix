@@ -71,13 +71,16 @@ let
       hash = "sha256-YlojwH2ITbq2l/7bOSF6qsMhkgqe6Xm7p3P/ZgiLSCU=";
     })];
   });
-  toggle-theme = pkgs.writeShellScript "toggle-theme" ''
-    if [ -d "$(${pkgs.home-manager}/bin/home-manager generations | head -1 | rg -o '/[^ ]*')"/specialisation ]; then
-      "$(${pkgs.home-manager}/bin/home-manager generations | head -1 | rg -o '/[^ ]*')"/specialisation/light/activate
-    else
-      "$(${pkgs.home-manager}/bin/home-manager generations | head -2 | tail -1 | rg -o '/[^ ]*')"/activate
-    fi
-  '';
+  # NOTE(vipa, 2026-04-20): This was broken by a change to
+  # home-manager (it was using experimental features, so that's fair I
+  # guess)
+  # toggle-theme = pkgs.writeShellScript "toggle-theme" ''
+  #   if [ -d "$(${pkgs.home-manager}/bin/home-manager generations | head -1 | rg -o '/[^ ]*')"/specialisation ]; then
+  #     "$(${pkgs.home-manager}/bin/home-manager generations | head -1 | rg -o '/[^ ]*')"/specialisation/light/activate
+  #   else
+  #     "$(${pkgs.home-manager}/bin/home-manager generations | head -2 | tail -1 | rg -o '/[^ ]*')"/activate
+  #   fi
+  # '';
 in
 
 rec {
@@ -458,7 +461,7 @@ rec {
           "--locked XF86MonBrightnessUp" = ''exec brightnessctl set +5%'';
 
           # NOTE(vipa, 2023-07-22): First attempt at global theme switching, this might be fine, or more likely causes infinite recursion
-          "${mod}+v" = "exec ${toggle-theme}";
+          # "${mod}+v" = "exec ${toggle-theme}";
           #   if config.specPackages ? light
           #   then "exec ${config.specPackages.light}/activate"
           #   else ''swaynag -t warning -m "Couldn't find the spec for light mode, not switching."'';
