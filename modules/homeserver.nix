@@ -60,6 +60,13 @@ in
     ports = [ 8083 ];
   };
 
+  services.valheim = {
+    enable = true;
+    name = "TPC";
+    world = "TPC";
+    first-port = 2456;
+  };
+
   services.restic.backups.gdrive = {
     repository = "rclone:gdrive:/backups";
     passwordFile = "/home/vipa/.restic-password";
@@ -73,6 +80,7 @@ in
       "/var/lib/paperless"
       "/var/lib/komga"
       "/var/lib/boxes-app"
+      "/var/lib/valheim"
     ];
   };
 }
