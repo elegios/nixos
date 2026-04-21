@@ -745,6 +745,9 @@ rec {
       "ctrl+shift+up" = "scroll_to_prompt -1";
       "ctrl+shift+down" = "scroll_to_prompt 1";
       "ctrl+o" = "kitten hints --type path";
+      "ctrl+plus" = "change_font_size current +2.0";
+      "ctrl+minus" = "change_font_size current -2.0";
+      "ctrl+0" = "change_font_size current 0.0";
     };
     extraConfig = ''
       mouse_map right doublepress ungrabbed mouse_select_command_output
