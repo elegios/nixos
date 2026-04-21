@@ -14,23 +14,25 @@ let
     # It's necessary to use cryptographic protocols from openssl_legacy in order to communicate with the ADE server.
     # OSError: OpenSSL has been compiled without RC2 support
     postPatch = ''
-      for file in oscrypto/_openssl/_lib{crypto,ssl}_c{ffi,types}.py; do
+      for file in oscrypto/_openssl/_libcrypto_c{ffi,types}.py; do
         substituteInPlace $file \
-          --replace "get_library('crypto', 'libcrypto.dylib', '42')" "'${openssl_legacy.out}/lib/libcrypto${stdenv.hostPlatform.extensions.sharedLibrary}'" \
-          --replace "get_library('ssl', 'libssl', '44')" "'${openssl_legacy.out}/lib/libssl${stdenv.hostPlatform.extensions.sharedLibrary}'"
+          --replace-fail "get_library('crypto', 'libcrypto.dylib', '42')" "'${openssl_legacy.out}/lib/libcrypto${stdenv.hostPlatform.extensions.sharedLibrary}' #dummy2"
       done
-    '';
+      for file in oscrypto/_openssl/_libssl_c{ffi,types}.py; do
+        substituteInPlace $file \
+            --replace-fail "get_library('ssl', 'libssl', '44')" "'${openssl_legacy.out}/lib/libssl${stdenv.hostPlatform.extensions.sharedLibrary}' #dummy"
+      done    '';
   });
 in
 stdenvNoCC.mkDerivation rec {
   pname = "acsm";
-  version = "0.0.16-unstable-2024-09-17";
+  version = "0.0.16-unstable-2025-10-07";
 
   src = fetchFromGitHub {
     owner = "Leseratte10";
     repo = "acsm-calibre-plugin";
-    rev = "2f40289a847bdd1cc8aac5284fd74d0ee03cd3b8";
-    hash = "sha256-ds1qm9vN9D8NGspseBgqP3tujtKJB7ivFyfS3mlFDB8=";
+    rev = "fb288afb3a83156f0e534eb1e0ec1cbc45a3e675";
+    hash = "sha256-LAwZiZmtq+GIm/ud83Jk7znYTyjZcF77Wb8quyhu9wA=";
   };
 
   # asn1cryptoSrc = fetchurl {

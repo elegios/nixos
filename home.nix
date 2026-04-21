@@ -192,7 +192,7 @@ rec {
 
   home.activation.copy-calibre-plugins = lib.hm.dag.entryAfter ["writeBoundary"] ''
     for f in {${pkgs.callPackage ./pkgs/calibre-dedrm {}},${pkgs.callPackage ./pkgs/calibre-acsm {}}}/*.zip; do
-      ${pkgs.calibre}/bin/calibre-customize --add-plugin="$f"
+      run ${pkgs.calibre}/bin/calibre-customize --add-plugin="$f"
     done
   '';
 
