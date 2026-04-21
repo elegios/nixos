@@ -1,0 +1,27 @@
+[Shortcuts]
+KisToolSelectElliptical=none
+KisToolSelectOutline=O
+KritaShape/KisToolBrush=B; A
+KritaShape/KisToolEllipse=none
+KritaTransform/KisToolMove=E
+PanTool=Å
+activateNextLayer=K
+activatePreviousLayer=J
+add_new_paint_layer=Shift+K
+clear=Del; Backspace
+edit_copy=Ctrl+C; ,
+edit_paste=Ctrl+V;\s
+edit_redo=Ctrl+Shift+Z; Shift+U
+edit_undo=Ctrl+Z; U
+erase_action=none
+fill_selection_background_color=none
+increase_opacity=none
+make_brush_color_darker=none
+next_favorite_preset=none
+paste_at=Ctrl+Alt+V;\s
+paste_into=.
+pathpoint-join=none
+pathpoint-remove=none
+previous_favorite_preset=none
+show_common_colors=none
+toggle_layer_visibility=Space

@@ -117,6 +117,7 @@ rec {
     uhk-agent
     inkscape
     vesktop
+    krita
 
     # archives
     zip
@@ -180,6 +181,8 @@ rec {
     pciutils # lspci
     usbutils # lsusb
   ];
+
+  xdg.configFile."kritashortcutsrc".source = config.lib.file.mkOutOfStoreSymlink ./dotfiles/kritashortcutsrc;
 
   xdg.mimeApps = {
     enable = true;
