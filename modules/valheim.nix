@@ -99,10 +99,10 @@ in {
           # "-crossplay" # This is broken because it looks for "party" shared library in the wrong path.
           "-savedir" "${cfg.stateDir}/save"
           "-name" "${cfg.name}"
-          "-port" "${cfg.first-port}"
+          "-port" "${toString cfg.first-port}"
           "-world" "${cfg.world}"
           "-password" "${cfg.password}"
-          "-public" "${if cfg.public then 1 else 0}" # Valheim now supports favourite servers in-game which I am using instead of listing in the public registry.
+          "-public" "${if cfg.public then "1" else "0"}" # Valheim now supports favourite servers in-game which I am using instead of listing in the public registry.
           "-backups" "0" # I take my own backups, if you don't you can remove this to use the built-in basic rotation system.
         ];
         Nice = "-5";
@@ -118,11 +118,4 @@ in {
       };
     };
   };
-
-	# This is my custom backup machinery. Substitute your own 🙂
-	kevincox.backup.valheim = {
-		paths = [
-			"/var/lib/valheim/save/"
-		];
-	};
 }

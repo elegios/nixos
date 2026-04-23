@@ -10,6 +10,7 @@ in
 {
   imports = [
     "${boxes-app}/module.nix"
+    ./valheim.nix
   ];
 
   services.tailscale.enable = true;
@@ -61,7 +62,7 @@ in
   };
 
   services.valheim = {
-    enable = true;
+    enable = false;
     name = "TPC";
     world = "TPC";
     first-port = 2456;
@@ -80,7 +81,7 @@ in
       "/var/lib/paperless"
       "/var/lib/komga"
       "/var/lib/boxes-app"
-      "/var/lib/valheim"
+      # "/var/lib/valheim"
     ];
   };
 }
