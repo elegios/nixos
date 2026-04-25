@@ -26,8 +26,12 @@
       url = "sourcehut:~meow_king/typst-ts-mode";
       flake = false;
     };
+    valheim = {
+      url = "github:hamburger1984/valheim-server-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, valheim, ... }@inputs:
     let hm = {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
@@ -74,6 +78,7 @@
               ./modules/common-configuration.nix
               ./modules/cachix.nix
               ./hosts/vipa-homeserver/default.nix
+              valheim.nixosModules.default
               home-manager.nixosModules.home-manager
               hm
             ];
