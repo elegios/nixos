@@ -255,7 +255,29 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "stylix": "stylix",
-        "typst-ts-mode": "typst-ts-mode"
+        "typst-ts-mode": "typst-ts-mode",
+        "valheim": "valheim"
+      }
+    },
+    "steam-fetcher": {
+      "inputs": {
+        "nixpkgs": [
+          "valheim",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1714795926,
+        "narHash": "sha256-PkgC9jqoN6cJ8XYzTA2PlrWs7aPJkM3BGiTxNqax0cA=",
+        "owner": "nix-community",
+        "repo": "steam-fetcher",
+        "rev": "12f66eafb7862d91b3e30c14035f96a21941bd9c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "steam-fetcher",
+        "type": "github"
       }
     },
     "stylix": {
@@ -384,6 +406,27 @@
         "owner": "~meow_king",
         "repo": "typst-ts-mode",
         "type": "sourcehut"
+      }
+    },
+    "valheim": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "steam-fetcher": "steam-fetcher"
+      },
+      "locked": {
+        "lastModified": 1772128657,
+        "narHash": "sha256-FFsz85zN8by7ruJtau+WZaIsY0S/ep3b2JEaEI8fuKY=",
+        "owner": "hamburger1984",
+        "repo": "valheim-server-flake",
+        "rev": "7c5456e467f5c8033fcea743fb5d41796e2cfdb9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hamburger1984",
+        "repo": "valheim-server-flake",
+        "type": "github"
       }
     }
   },

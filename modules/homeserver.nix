@@ -63,7 +63,7 @@ in
   services.valheim = {
     enable = true;
     serverName = "Princely Chat";
-    worldName = "The Princely World";
+    worldName = "ThePrincelyValheimWorld001";
     openFirewall = true;
     password = "princelychat";
     public = false;
