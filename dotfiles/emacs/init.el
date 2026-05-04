@@ -24,6 +24,7 @@
           ("\\`/tmp\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
           ("\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
           (".*" ,(expand-file-name "auto-save/" user-emacs-directory) t)))
+(setq create-lockfiles nil)
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
