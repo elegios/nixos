@@ -2,6 +2,7 @@
 
 let http = require('http');
 let url = require('url');
+let fs = require('node:fs/promises');
 
 async function read(stream) {
     const chunks = [];
@@ -62,7 +63,7 @@ let html = `
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Simple D3 Graph Visualization</title>
+    <title>${process.argv[2]}</title>
     <style>
     * { margin: 0; padding: 0; }
     body, html { height: 100%; }
@@ -345,7 +346,7 @@ let html = `
 
 (async function() {
 
-processInput(JSON.parse(await read(process.stdin)));
+processInput(JSON.parse(await fs.readFile(process.argv[2])));
 
 console.log("#Nodes: " + graph.nodes.length);
 console.log("#Edges: " + graph.links.length);
