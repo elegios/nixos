@@ -127,6 +127,7 @@ rec {
     dtrx
 
     # utils
+    moreutils
     fd
     pavucontrol
     ripgrep # recursively searches directories for a regex pattern
