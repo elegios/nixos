@@ -88,6 +88,7 @@
             modules = [
               ./modules/common-configuration.nix
               ./modules/cachix.nix
+              ./modules/haskell.nix
               ./modules/tailscale.nix
               ./hosts/vipa-thinkpad/default.nix
               nixos-hardware.nixosModules.lenovo-thinkpad-t14s  # NOTE(vipa, 2026-01-30): There's no entry for t14s gen-6 amd, so we try for t14s amd, which is not exposed, but is equivalent with the following three items (given latest linux kernel)
