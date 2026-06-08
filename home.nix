@@ -821,6 +821,11 @@ rec {
           src = miking-emacs;
         })
         (epkgs.trivialBuild rec {
+          pname = "easel-mode";
+          version = "1";
+          src = ./pkgs/easel-mode;
+        })
+        (epkgs.trivialBuild rec {
           pname = "typst-ts-mode";
           version = "1";
           src = typst-ts-mode;
