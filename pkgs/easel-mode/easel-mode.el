@@ -1,5 +1,7 @@
 ;;; easel-mode.el -*- lexical-binding: t -*-
 
+(require 'smie)
+
 (eval-when-compile
   (require 'rx))
 ;; Please keep these lists sorted
