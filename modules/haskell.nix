@@ -1,4 +1,4 @@
-{}:
+{ ... }:
 
 {
   # Binary Cache for haskell.nix
