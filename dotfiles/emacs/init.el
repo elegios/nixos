@@ -650,6 +650,8 @@
   :ensure nil
   :mode "\\.easel\\'")
 
+(use-package nael)
+
 (use-package just-mode)
 
 (when (executable-find "direnv")
