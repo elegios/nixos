@@ -84,9 +84,6 @@ let
 in
 
 rec {
-  # NOTE(vipa, 2023-07-22): First attempt at global theme switching, unfortunately causes infinite recursion
-  # imports = [ ./modules/ele-spec.nix ];
-
   home.username = "vipa";
   home.homeDirectory = "/home/vipa";
 
@@ -116,7 +113,6 @@ rec {
     calibre
     uhk-agent
     inkscape
-    vesktop
     krita
 
     # archives
@@ -138,7 +134,7 @@ rec {
     visidata
     entr
     libnotify
-    nodejs_20
+    nodejs
     (callPackage ./pkgs/edir {})
     tesseract
     wl-mirror
