@@ -32,15 +32,15 @@
     };
   };
   outputs = { self, nixpkgs, home-manager, stylix, nixos-hardware, valheim, ... }@inputs:
-    let hm = {
+    let hm = modules: {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
 
           home-manager.users.vipa = {
-            imports = [ ./home.nix stylix.homeModules.stylix ];
+            imports = modules;
           };
 
-          home-manager.extraSpecialArgs = with inputs; { inherit fish-gi miking-emacs typst-ts-mode; };
+          home-manager.extraSpecialArgs = with inputs; { inherit fish-gi miking-emacs typst-ts-mode stylix; };
         };
     in
       {
@@ -52,7 +52,7 @@
               ./hosts/vipa-nixos/default.nix
               nixos-hardware.nixosModules.dell-xps-13-9380
               home-manager.nixosModules.home-manager
-              hm
+              (hm [./hm-modules/gui.nix])
             ];
           };
           "viktpalm-linux" = nixpkgs.lib.nixosSystem rec {
@@ -67,7 +67,7 @@
               ./modules/cachix.nix  # NOTE(vipa, 2025-11-08): Can be updated with cachix use <whatever> -m nixos -d ./modules
               ./hosts/viktpalm-linux/default.nix
               home-manager.nixosModules.home-manager
-              hm
+              (hm [./hm-modules/gui.nix])
             ];
           };
           "vipa-homeserver" = nixpkgs.lib.nixosSystem rec {
@@ -80,7 +80,7 @@
               ./hosts/vipa-homeserver/default.nix
               valheim.nixosModules.default
               home-manager.nixosModules.home-manager
-              hm
+              (hm [./hm-modules/basic.nix])
             ];
           };
           "vipa-thinkpad" = nixpkgs.lib.nixosSystem rec {
@@ -95,7 +95,7 @@
               nixos-hardware.nixosModules.common-cpu-amd
               nixos-hardware.nixosModules.common-gpu-amd
               home-manager.nixosModules.home-manager
-              hm
+              (hm [./hm-modules/gui.nix])
             ];
           };
         };
