@@ -646,6 +646,10 @@
 (use-package zig-ts-mode
   :mode "\\.zig\\'")
 
+(use-package easel-mode
+  :ensure nil
+  :mode "\\.easel\\'")
+
 (use-package just-mode)
 
 (when (executable-find "direnv")
