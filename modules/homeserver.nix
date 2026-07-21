@@ -69,6 +69,15 @@ in
     public = false;
   };
 
+  services.cook-cli = {
+    enable = true;
+    port = 8084;
+    openFirewall = true;
+  };
+  services.tailscale.serve.services.food.endpoints = {
+    "tcp:80" = "http://localhost:8084";
+  };
+
   services.restic.backups.gdrive = {
     repository = "rclone:gdrive:/backups";
     passwordFile = "/home/vipa/.restic-password";
@@ -83,6 +92,7 @@ in
       "/var/lib/komga"
       "/var/lib/boxes-app"
       "/var/lib/valheim"
+      "/var/lib/cook-cli"
     ];
   };
 }
