@@ -1,0 +1,5 @@
+#!/usr/bin/env fish
+
+# Produce a markdown formatted list of open PRs for a given GitHub repo ('owner/repo')
+
+gh pr list --repo $argv[1] --state open --limit 100 --json number,title,url --jq '.[] | "- [#\(.number) \(.title)](\(.url))"'
