@@ -295,7 +295,7 @@ in
       jq -R '. as $line | try fromjson catch ("-> " + $line)' | command jless --clipboard-cmd wl-copy $argv
     '';
     interactiveShellInit = ''
-      bind \b 'backward-kill-word'
+      bind ctrl-backspace 'backward-kill-word'
       set fish_greeting
       set -gx EDITOR emacs
       set -gx PAGER less -R
