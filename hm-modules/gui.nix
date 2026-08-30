@@ -92,6 +92,8 @@ in
     krita
     maestral-gui
 
+    docker-sbx
+
     tesseract
     wl-mirror
   ];
