@@ -1,3 +1,4 @@
+; -*- lexical-binding: t; -*-
 ; ==== Misc small settings ====
 
 (setq inhibit-splash-screen t)
@@ -33,6 +34,7 @@
             (add-to-list 'write-file-functions 'delete-trailing-whitespace)
             (setq truncate-lines t)))
 (setq-default major-mode 'indented-text-mode)
+(setq server-stop-automatically 'delete-frame)
 
 (setq show-paren-delay 0)
 (show-paren-mode 1)
