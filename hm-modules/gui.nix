@@ -66,7 +66,7 @@ let
 in
 
 {
-  imports = [ stylix.homeModules.stylix ./basic.nix ];
+  imports = [ stylix.homeModules.stylix ./basic.nix ./theme-toggle.nix ];
 
   home.packages = with pkgs; [
     # apps

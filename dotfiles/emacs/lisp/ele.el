@@ -270,6 +270,30 @@ sequence."
   (cond ((eq *ele-current-theme* *ele-theme-dark*) (ele/next-theme *ele-theme-light*))
         ((eq *ele-current-theme* *ele-theme-light*) (ele/next-theme *ele-theme-dark*))))
 
+(defvar ele/theme-marker-file
+  (expand-file-name "theme-polarity"
+                     (or (getenv "XDG_DATA_HOME") "~/.local/share"))
+  "Path to the marker file the Nix theme-toggle module writes, containing
+the literal text \"dark\" or \"light\".")
+
+(defun ele/set-theme (polarity)
+  "Load the theme for POLARITY, a string \"dark\" or \"light\"."
+  (interactive)
+  (ele/next-theme (pcase polarity
+                     ("light" *ele-theme-light*)
+                     (_ *ele-theme-dark*))))
+
+(defun ele/load-theme-from-marker ()
+  "Read the current polarity from `ele/theme-marker-file' and load it."
+  (interactive)
+  (ele/set-theme
+   (if (file-readable-p ele/theme-marker-file)
+       (string-trim
+        (with-temp-buffer
+          (insert-file-contents ele/theme-marker-file)
+          (buffer-string)))
+     "dark")))
+
 ; ==== Misc ====
 
 (defun ele/edit-emacs-config ()

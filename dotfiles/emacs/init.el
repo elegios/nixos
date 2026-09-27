@@ -92,8 +92,9 @@
   :demand t)
 
 (use-package solarized-theme
+  :after (ele)
   :config
-  (load-theme 'solarized-dark 'no-confirm))
+  (ele/load-theme-from-marker))
 
 (use-package expand-region
   :commands (er/expand-region er/contract-region
