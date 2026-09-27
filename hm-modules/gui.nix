@@ -146,12 +146,30 @@ in
     targets.gtk.enable = true;
     targets.swaylock.enable = true;
     targets.gnome.enable = true;
+    targets.vicinae.enable = true;
   };
 
   programs.sioyek = {
     enable = true;
     config = {
       vertical_move_amount = "3";
+    };
+  };
+
+  programs.vicinae = {
+    enable = true;
+    systemd.enable = true;
+    systemd.target = "sway-session.target";
+    settings = {
+      close_on_focus_loss = false;
+      escape_key_behavior = "close_window";
+      pop_to_root_on_close = true;
+      launcher_window.rounding = 5;
+      favorites = [];
+      providers = {
+        calculator.preferences.backend = "qalculate";
+        clipboard.enabled = false;
+      };
     };
   };
 
@@ -183,7 +201,6 @@ in
         terminal = "kitty";
         startup = [
           { command = "waybar"; }
-          { command = "mkdir -p ~/logs && ulauncher --hide-window > ~/logs/ulauncher.log 2>&1"; }
           { command = "${unset-idle}"; }
         ];
         input."type:keyboard" = {
@@ -199,7 +216,7 @@ in
         keybindings = {
           # External programs
           "${mod}+Shift+Return" = "exec kitty";
-          "${mod}+space" = "exec ulauncher-toggle";
+          "${mod}+space" = "exec vicinae toggle";
           # Sway and session things
           "${mod}+Shift+r" = "reload";
           "${mod}+q" = ''exec swaynag -t warning -m "You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session." -B "Yes, exit sway" "swaymsg exit"'';
@@ -280,7 +297,6 @@ in
           "Shift+Space" = ''mode "default"'';
         };
         window.commands = [
-          { command = "floating enable, border none"; criteria = { app_id = "^ulauncher$"; }; }
           { command = "floating enable, sticky enable"; criteria = { title = "^Firefox — Sharing Indicator$"; app_id = "firefox"; }; }
           { command = "floating enable, border none, sticky enable"; criteria = { title = "^as_toolbar$"; app_id = ""; }; }
           { command = "floating enable, border none"; criteria = { title = "^zoom$"; app_id = ""; }; }

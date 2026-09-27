@@ -67,7 +67,6 @@ in
     git
     wget
     curl
-    ulauncher
     fish
     dbus-sway-environment
     waybar
