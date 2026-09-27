@@ -470,7 +470,8 @@
       ("t"
        (("t" ele/insert-todo :mc-all 0)
         ("n" ele/insert-note :mc-all 0)
-        ("o" ele/insert-opt :mc-all 0)))
+        ("o" ele/insert-opt :mc-all 0)
+        ("a" ele/insert-todo-ai :mc-all 0)))
       ("p" projectile-find-file :mc-all 0)
       ("b" switch-to-buffer :mc-all 0)
       ("f" find-file :mc-all 0)

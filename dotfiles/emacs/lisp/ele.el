@@ -510,6 +510,13 @@ The window scope is determined by `avy-all-windows' (ARG negates it)."
   (interactive)
   (ele/insert-todo-like "OPT"))
 
+(defun ele/insert-todo-ai ()
+  (interactive)
+  (push-mark (point))
+  (insert "TODO(ai): ")
+  (comment-region (mark) (point))
+  (ele/insert))
+
 (defun ele/delete (arg)
   (interactive "p")
   (if (use-region-p)
