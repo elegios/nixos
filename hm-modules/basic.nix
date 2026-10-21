@@ -162,7 +162,14 @@ in
         diff-invocation-mode = "file-by-file";
       };
       merge-tools.patdiff = {
-        program = lib.getExe' pkgs.patdiff "patdiff";
+        program = lib.getExe'
+          # TODO(vipa, 2026-11-04): replace with just `pkgs.patdiff` once https://github.com/NixOS/nixpkgs/pull/581999 is in
+          (pkgs.patdiff.overrideAttrs (old: {
+            propagatedBuildInputs = builtins.filter
+              (p: !(lib.hasInfix "pcre" (p.pname or "")))
+              (old.propagatedBuildInputs or []);
+          }))
+          "patdiff";
         diff-args = ["$left" "$right" "-find-moves"];
         diff-invocation-mode = "file-by-file";
         diff-expected-exit-codes = [0 1];

@@ -61,6 +61,14 @@ in
   };
   console.useXkbConfig = true;
 
+  # TODO(vipa, 2026-10-23): Zotero uses in internally packaged firefox
+  # that's reached EOL. Next zotero will presumably update the used
+  # firefox version, at which point this can either be removed or
+  # updated.
+  nixpkgs.config.permittedInsecurePackages = [
+    "firefox-esr-140-bin-unwrapped-140.17.0esr"
+  ];
+
   environment.systemPackages = with pkgs; [
     pulseaudio
     brightnessctl
