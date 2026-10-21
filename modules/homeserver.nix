@@ -73,7 +73,12 @@ in
     enable = true;
     port = 8084;
     openFirewall = true;
+    package = pkgs.cook-cli.overrideAttrs (old: {
+      buildFeatures = (old.buildFeatures or [ ]) ++ [ "sync" "server" "import" "lsp" ];
+      cargoBuildFeatures = (old.cargoBuildFeatures or [ ]) ++ [ "sync" "server" "import" "lsp" ];
+    });
   };
+  systemd.services.cook-cli.environment.COOK_CORS_ORIGIN = "http://food";
   services.tailscale.serve.services.food.endpoints = {
     "tcp:80" = "http://localhost:8084";
   };
