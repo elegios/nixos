@@ -148,23 +148,24 @@ in
 
   programs.jujutsu = {
     enable = true;
-    # NOTE(vipa, 2024-05-13): The way the `ediff` option is
-    # implemented overwrites any `merge-tools` in `settings` it seems
-    # like, so I turn it off for now. Relevant PR:
-    # https://github.com/nix-community/home-manager/pull/5371
-    ediff = false;
     settings = {
       user.name = "Viktor Palmkvist";
       user.email = "vipa@kth.se";
       ui = {
-        diff-formatter = "difftastic";
+        diff-formatter = "patdiff";
         pager = "less -FRX";
         default-command = "log-stack";
       };
       merge-tools.difftastic = {
-        program = "${pkgs.difftastic}/bin/difft";
+        program = lib.getExe pkgs.difftastic;
         diff-args = ["--color=always" "$left" "$right"];
         diff-invocation-mode = "file-by-file";
+      };
+      merge-tools.patdiff = {
+        program = lib.getExe' pkgs.patdiff "patdiff";
+        diff-args = ["$left" "$right" "-find-moves"];
+        diff-invocation-mode = "file-by-file";
+        diff-expected-exit-codes = [0 1];
       };
       git = {
         fetch = "origin";
