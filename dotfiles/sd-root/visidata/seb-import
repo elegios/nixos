@@ -1,0 +1,121 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i python3 -p "python3.withPackages (ps: [ ps.openpyxl ])"
+"""Convert a bank-statement xlsx into a simple CSV.
+
+Usage: xlsx2csv.py INPUT.xlsx [OUTPUT.csv]
+
+If OUTPUT.csv is omitted, the CSV is written next to the input file with a
+.csv extension. Use "-" as OUTPUT to write to stdout.
+
+The sheet has some irrelevant lines before the real header row. The header row
+is detected as the first row containing all of: Bokföringsdatum, Valutadatum,
+Text and Belopp.
+
+Output columns: "Real Date", "Text", "Amount"
+  - Real Date: earliest of Bokföringsdatum, Valutadatum and the optional
+    trailing "/YY-MM-DD" date found in Text.
+  - Text: original text with that trailing "/YY-MM-DD" removed.
+  - Amount: Belopp, unchanged.
+"""
+
+import csv
+import re
+import sys
+from datetime import date, datetime
+from pathlib import Path
+
+from openpyxl import load_workbook
+
+REQUIRED = ("Bokföringsdatum", "Valutadatum", "Text", "Belopp")
+TRAILING_DATE = re.compile(r"\s*/\s*(\d{2}-\d{2}-\d{2})\s*$")
+
+
+def to_date(value):
+    """Convert a cell value (datetime/date/'YYYY-MM-DD' string) to a date."""
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    s = str(value).strip()
+    if not s:
+        return None
+    return datetime.strptime(s[:10], "%Y-%m-%d").date()
+
+
+def find_header(rows):
+    """Return (index_of_header_row, {column_name: column_index})."""
+    for i, row in enumerate(rows):
+        names = {
+            str(cell).strip(): j
+            for j, cell in enumerate(row)
+            if cell is not None and str(cell).strip()
+        }
+        if all(name in names for name in REQUIRED):
+            return i, {name: names[name] for name in REQUIRED}
+    return None, None
+
+
+def load_rows(path):
+    """Find the first sheet containing the header and return its data rows."""
+    wb = load_workbook(path, read_only=True, data_only=True)
+    for ws in wb.worksheets:
+        rows = list(ws.iter_rows(values_only=True))
+        idx, cols = find_header(rows)
+        if idx is not None:
+            return rows[idx + 1 :], cols
+    sys.exit(f"error: no sheet contains all of the columns {', '.join(REQUIRED)}")
+
+
+def convert(rows, cols):
+    for row in rows:
+
+        def cell(name):
+            j = cols[name]
+            return row[j] if j < len(row) else None
+
+        booking = to_date(cell("Bokföringsdatum"))
+        value_date = to_date(cell("Valutadatum"))
+        text = cell("Text")
+        amount = cell("Belopp")
+
+        # Skip blank / trailing rows (e.g. totals without dates).
+        if booking is None and value_date is None and not text:
+            continue
+
+        text = "" if text is None else str(text).strip()
+        dates = [d for d in (booking, value_date) if d is not None]
+
+        m = TRAILING_DATE.search(text)
+        if m:
+            dates.append(datetime.strptime(m.group(1), "%y-%m-%d").date())
+            text = text[: m.start()].rstrip()
+
+        if not dates:
+            continue
+
+        yield [min(dates).isoformat(), text, "" if amount is None else amount]
+
+
+def main():
+    if not 2 <= len(sys.argv) <= 3:
+        sys.exit(f"usage: {Path(sys.argv[0]).name} INPUT.xlsx [OUTPUT.csv|-]")
+
+    src = Path(sys.argv[1])
+    dst = sys.argv[2] if len(sys.argv) == 3 else str(src.with_suffix(".csv"))
+
+    rows, cols = load_rows(src)
+
+    out = sys.stdout if dst == "-" else open(dst, "w", newline="", encoding="utf-8")
+    try:
+        writer = csv.writer(out)
+        writer.writerow(["Real Date", "Text", "Amount"])
+        writer.writerows(convert(rows, cols))
+    finally:
+        if out is not sys.stdout:
+            out.close()
+
+
+if __name__ == "__main__":
+    main()
