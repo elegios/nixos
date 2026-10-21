@@ -3,7 +3,7 @@
 let
   boxes-app = builtins.fetchGit {
     url = "https://github.com/elegios/boxes-app.git";
-    rev = "b0e9ce377c010df5b93988f70bdb9b2e3bbb2dda";
+    rev = "7ace57510a7a686b0efd96d240299315e899ba35";
   };
 in
 
