@@ -83,6 +83,15 @@ in
     "tcp:80" = "http://localhost:8084";
   };
 
+  services.actual = {
+    enable = true;
+    port = 8085;
+    openFirewall = true;
+  };
+  services.tailscale.serve.services.money.endpoints = {
+    "tcp:80" = "http://localhost:8085";
+  };
+
   services.restic.backups.gdrive = {
     repository = "rclone:gdrive:/backups";
     passwordFile = "/home/vipa/.restic-password";
@@ -98,6 +107,7 @@ in
       "/var/lib/boxes-app"
       "/var/lib/valheim"
       "/var/lib/cook-cli"
+      "/var/lib/actual"
     ];
   };
 }
