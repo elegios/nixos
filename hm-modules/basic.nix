@@ -305,7 +305,7 @@ in
     interactiveShellInit = ''
       bind ctrl-backspace 'backward-kill-word'
       set fish_greeting
-      set -gx EDITOR emacs
+      set -gx EDITOR emacsclient -nw
       set -gx PAGER less -R
 
       # Expand ... to ../.., .... to ../../.., etc.
@@ -338,6 +338,11 @@ in
           pname = "miking-emacs";
           version = "1";
           src = miking-emacs;
+        })
+        (epkgs.trivialBuild rec {
+          pname = "treeppl-mode";
+          version = "1";
+          src = ../pkgs/treppl-mode;
         })
         (epkgs.trivialBuild rec {
           pname = "easel-mode";
