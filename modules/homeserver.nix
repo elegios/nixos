@@ -19,7 +19,9 @@ in
     enable = true;
     address = "::";
     port = 8080;
-    settings.PAPERLESS_OCR_LANGUAGE = "eng+swe";
+    environmentFile = pkgs.writeText "paperless-ocr-env" ''
+      PAPERLESS_OCR_LANGUAGE=swe+eng
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 8080 ];
   networking.firewall.allowedUDPPorts = [ 8080 ];
@@ -85,11 +87,12 @@ in
 
   services.actual = {
     enable = true;
-    port = 8085;
+    settings.port = 8085;
     openFirewall = true;
   };
   services.tailscale.serve.services.money.endpoints = {
     "tcp:80" = "http://localhost:8085";
+    "tcp:443" = "http://localhost:8085";
   };
 
   services.restic.backups.gdrive = {
