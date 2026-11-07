@@ -14,7 +14,7 @@ in
   ];
 
   services.tailscale.enable = true;
-  services.tailscale.serve-temp.enable = true;
+  # services.tailscale.serve-temp.enable = true;
   # services.tailscale.serve.enable = true;
 
   services.paperless = {
@@ -27,7 +27,7 @@ in
   };
   networking.firewall.allowedTCPPorts = [ 8080 ];
   networking.firewall.allowedUDPPorts = [ 8080 ];
-  services.tailscale.serve-temp.paperless = ["http://localhost:8080" "--http" "80" "--https" "443"];
+  services.tailscale.serve-temp.paperless = ["--http" "80" "http://localhost:8080"];
   services.tailscale.serve.services.paperless.endpoints = {
     "tcp:80" = "http://localhost:8080";
   };
@@ -37,7 +37,7 @@ in
     settings.server.port = 8081;
     openFirewall = true;
   };
-  services.tailscale.serve-temp.komga = ["http://localhost:8081" "--http" "80" "--https" "443"];
+  services.tailscale.serve-temp.komga = ["--http" "80" "http://localhost:8081"];
   services.tailscale.serve.services.komga.endpoints = {
     "tcp:80" = "http://localhost:8081";
   };
@@ -47,7 +47,7 @@ in
     settings.port = 8082;
     openFirewall = true;
   };
-  services.tailscale.serve-temp.boxes = ["http://localhost:8082" "--http" "80" "--https" "443"];
+  services.tailscale.serve-temp.boxes = ["--http" "80" "http://localhost:8082"];
   services.tailscale.serve.services.boxes.endpoints = {
     "tcp:80" = "http://localhost:8082";
   };
@@ -86,7 +86,7 @@ in
     });
   };
   systemd.services.cook-cli.environment.COOK_CORS_ORIGIN = "http://food";
-  services.tailscale.serve-temp.food = ["http://localhost:8084" "--http" "80" "--https" "443"];
+  services.tailscale.serve-temp.food = ["--http" "80" "http://localhost:8084"];
   services.tailscale.serve.services.food.endpoints = {
     "tcp:80" = "http://localhost:8084";
   };
@@ -96,7 +96,7 @@ in
     settings.port = 8085;
     openFirewall = true;
   };
-  services.tailscale.serve-temp.actual = ["http://localhost:8085" "--http" "80" "--https" "443"];
+  services.tailscale.serve-temp.money = ["--https" "443" "http://localhost:8085"];
   services.tailscale.serve.services.money.endpoints = {
     "tcp:443" = "http://localhost:8085"; # This should be https on the outside and http on the inside, but that can't be expressed this way right now, hence `tailscale.serve-temp`
   };
@@ -116,7 +116,9 @@ in
       "/var/lib/boxes-app"
       "/var/lib/valheim"
       "/var/lib/cook-cli"
+      # NOTE(vipa, 2026-11-07): systemd apparently puts the actual directory under `private` because of how the `actual` user is created, so we need to backup both folders
       "/var/lib/actual"
+      "/var/lib/private/actual"
     ];
   };
 }

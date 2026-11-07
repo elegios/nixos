@@ -92,6 +92,7 @@ in
     ethtool
     pciutils # lspci
     usbutils # lsusb
+    restic
   ];
 
   systemd.user.timers.clear-downloads = {
